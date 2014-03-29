@@ -74,7 +74,7 @@ Modules:
 1)  Determining whether a move is valid
       implemented in Board
 2)  Generate list of valid moves
-      implemented in Player
+      implemented in MachinePlayer
 3)  Adjacent chip finder that finds chips adjacent to a chip
       implemented in Board
 4)  Finding networks
@@ -90,7 +90,7 @@ class Board
 public boolean isValidMove(Move move);
 
 2. List of valid moves
-class Player
+class MachinePlayer
 // Returns an array of valid Moves in the specified board
 private Moves[] validMoves(Board board);
 
