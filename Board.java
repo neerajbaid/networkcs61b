@@ -20,6 +20,10 @@ public class Board
     DIRECTION_RIGHT, DIRECTION_DOWN_RIGHT, DIRECTION_DOWN,
     DIRECTION_DOWN_LEFT, DIRECTION_LEFT, DIRECTION_UP_LEFT};
 
+  public Board() {
+    board = new Piece[8][8];
+  }
+
   // # pragma mark - Network Finding #iOSProgrammers
 
   public SList findAllNetworks(int color)
