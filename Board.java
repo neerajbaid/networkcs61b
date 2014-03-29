@@ -130,7 +130,7 @@ public class Board
     SList pieces = new SList();
     if (color == WHITE_COLOR)
     {
-      for (int i = 1; i < board[0].length()-1)
+      for (int i = 1; i < board[0].length-1)
       {
         int[] coordinate = [i,0];
         Piece piece = pieceAtCoordinate(coordinate);
@@ -140,7 +140,7 @@ public class Board
     }
     else if (color == BLACK_COLOR)
     {
-      or (int i = 1; i < board[0].length()-1)
+      for (int i = 1; i < board[0].length-1)
       {
         int[] coordinate = [0,i];
         Piece piece = pieceAtCoordinate(coordinate);
@@ -157,9 +157,9 @@ public class Board
     SList pieces = new SList();
     if (color == WHITE_COLOR)
     {
-      for (int i = 1; i < board[0].length()-1)
+      for (int i = 1; i < board[0].length-1)
       {
-        int[] coordinate = [i,board[0].length()-1];
+        int[] coordinate = [i,board[0].length-1];
         Piece piece = pieceAtCoordinate(coordinate);
         if (piece != null)
           pieces.insertBack(piece);
@@ -167,9 +167,9 @@ public class Board
     }
     else if (color == BLACK_COLOR)
     {
-      or (int i = 1; i < board[0].length()-1)
+      for (int i = 1; i < board[0].length-1)
       {
-        int[] coordinate = [board[0].length()-1,i];
+        int[] coordinate = [board[0].length-1,i];
         Piece piece = pieceAtCoordinate(coordinate);
         if (piece != null)
           pieces.insertBack(piece);
