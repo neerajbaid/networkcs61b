@@ -33,6 +33,8 @@ public class MachinePlayer extends Player {
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
+
+    Moves[] validMoves = 
     return new Move();
   } 
 
@@ -52,5 +54,43 @@ public class MachinePlayer extends Player {
   public boolean forceMove(Move m) {
     return false;
   }
+
+  private void undoMove(Move move) {
+    
+  }
+
+
+  public Move chooseMove(boolean side, int alpha, int beta) {
+    Move myBest, replyBest;
+    int myBestScore, replyBestScore;
+    if ("this" Grid is full or has a win) {
+      // return a Best with the Grid’s score, no move;
+      return new Move();
+    }
+    if (side == WHITE_COLOR) { //WHITE_COLOR = COMPUTER
+      myBestScore = alpha;
+    } else {
+      myBestScore = beta;
+    }
+    for (each legal move m) {
+      perform move m; // Modifies "this" Grid
+      replyBest = chooseMove(!side, alpha, beta);
+      undo move m; // Restores "this" Grid
+      if (side == WHITE_COLOR && replyBestScore > myBestScore) {
+        myBest = m;
+        myBestScore = replyBestScore;
+        alpha = replyBestScore;
+      } else if (side == BLACK_COLOR && replyBestScore < myBestScore) {
+        myBest = m;
+        myBestScore = replyBestScore;
+        beta = replyBestScore;
+      }
+      if (alpha >= beta) {
+        return myBest;
+      }
+    }
+    return myBest;
+  }
+
 
 }
