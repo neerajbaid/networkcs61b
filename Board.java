@@ -24,7 +24,31 @@ public class Board
     board = new Piece[8][8];
   }
 
-  // # pragma mark - Network Finding #iOSProgrammers
+  // # pragma mark - Network Finding #iOSProgrammers #ye
+  
+  public boolean isValidMove(Move move){
+	  int difference = move.x1 - move.y1;
+	  boolean notInCorner = difference != 0 && difference != this.board.length;   
+	  boolean pieceThere = this.board[move.x1][move.y1] != null;
+	  
+	  //count how many pieces in vacinity
+	  int counter = 0;
+	  for (int i = -1; i < 2; i++) {
+		  for (int j = -1; j < 2; j++) {
+			  try{
+				  counter += (int)(this.board[move.x1 + i][move.y1 + j] != null);   
+			  } catch(Exception e){}
+		  }
+	  }
+	  
+	  boolean clusterAround = counter > 2;
+	  
+	  //check if placed in opposite color's goal
+	  
+	  return notInCorner && !pieceThere && !clusterAround;
+		
+	}
+  
 
   public SList findAllNetworks(int color)
   {

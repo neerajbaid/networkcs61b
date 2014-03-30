@@ -22,12 +22,34 @@ public class MachinePlayer extends Player {
     this.color = color;
   }
 
-  // Creates a machine player with the given color and search depth.  Color is
+  // Creates a machine player with the given color and search depth.  Color is   
   // either 0 (black) or 1 (white).  (White has the first move.)
   public MachinePlayer(int color, int searchDepth) {
     board = new Board();
     this.searchDepth searchDepth;
     this.color = color;
+  }
+  
+  public Moves[] validMoves(Board board){
+	  SList moves = new SList();
+	  
+	  for(int i = 0; i < 8; i++){
+		  for(int j = 0; j < 8; j++){
+			  Move move = new Move(i, j);
+			  if(board.isValidMove(move)){
+				  moves.push(move);
+			  }
+		  }
+	  }
+	  
+	  Moves[] arr = new Moves[moves.length()];   
+	  SListNode current = moves.front();
+	  for(int i = 0; i < arr.length; i++){
+		  arr[i] = current.item();
+		  current = current.next();
+	  }
+	  
+	  return arr;
   }
 
   // Returns a new move by "this" player.  Internally records the move (updates
