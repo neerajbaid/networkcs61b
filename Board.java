@@ -19,12 +19,68 @@ public class Board
   public static final int[] DIRECTIONS = {DIRECTION_UP, DIRECTION_UP_RIGHT,
     DIRECTION_RIGHT, DIRECTION_DOWN_RIGHT, DIRECTION_DOWN,
     DIRECTION_DOWN_LEFT, DIRECTION_LEFT, DIRECTION_UP_LEFT};
+  
+  private static final int WHITE_WIN = 0, BLACK_WIN = 1;
 
   public Board() {
     board = new Piece[8][8];
   }
 
   // # pragma mark - Network Finding #iOSProgrammers #ye
+  
+  public int evaluate(int playerIn){
+	  int player = playerIn;
+	  
+	  SList networks = this.findAllNetworks(player);
+	  boolean reachesGoal = false;
+	  SListNode current = networks.front();
+	  while(current != null){
+		  Network network = current.item();
+		  
+		  SList pieces = network.getPieces();   
+		  Piece front = pieces.front();
+		  Piece back = pieces.back();
+		  
+		  if(this.isOnGoal(front) && this.isOnGoal(back)){   
+			  return 1;
+		  }
+		  
+		  current = current.next();
+	  }
+	  
+	  //switch players
+	  player = 1 - player;
+	  SList networks = this.findAllNetworks(player);
+	  boolean reachesGoal = false;
+	  SListNode current = networks.front();
+	  while(current != null){
+		  Network network = current.item();
+		  
+		  SList pieces = network.getPieces();   
+		  Piece front = pieces.front();
+		  Piece back = pieces.back();
+		  
+		  if(this.isOnGoal(front) && this.isOnGoal(back)){
+			  return -1;
+		  }
+		  
+		  current = current.next();
+	  }
+	  
+	  return 0;
+  }
+  
+  private boolean isOnGoal(Piece piece){
+	  return piece.coordinate[0] == 0 && piece.coordinate[1] != 0 || piece.coordinate[1] == 0 && piece.coordinate[0] != 0;   
+  }
+  
+  public int getHeight(){
+	  return this.board[0].length;
+  }
+  
+  public int getWidth(){
+	  return this.board.length;
+  }
   
   public boolean isValidMove(Move move){
 	  int difference = move.x1 - move.y1;

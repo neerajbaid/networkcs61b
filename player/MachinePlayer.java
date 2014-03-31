@@ -33,8 +33,8 @@ public class MachinePlayer extends Player {
   public Moves[] validMoves(Board board){
 	  SList moves = new SList();
 	  
-	  for(int i = 0; i < 8; i++){
-		  for(int j = 0; j < 8; j++){
+	  for(int i = 0; i < board.getWidth(); i++){
+		  for(int j = 0; j < board.getHeight(); j++){   
 			  Move move = new Move(i, j);
 			  if(board.isValidMove(move)){
 				  moves.push(move);
@@ -56,7 +56,7 @@ public class MachinePlayer extends Player {
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
 
-    Moves[] validMoves = 
+    Moves[] validMoves = this.validMoves(board);
     return new Move();
   } 
 
