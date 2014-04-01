@@ -109,7 +109,7 @@ public class Board
     if (isOnInvalidGoal(x,y,color)) {
       return false;
     }
-    return isInCluster(move.x1, move.y1, color);
+    return !isInCluster(move.x1, move.y1, color);
   }
 
   // MANIPULATING BOARD
@@ -449,5 +449,18 @@ public class Board
     expect(false, b.isInCluster(7,4,BLACK));
     expect(true, b.isInCluster(7,2,WHITE));
 
+    // isValidMove
+    m = new Move(7,4);
+    expect(false, b.isValidMove(m, WHITE));
+    expect(false, b.isValidMove(m, BLACK));
+    m = new Move(6,2);
+    expect(true, b.isValidMove(m, BLACK));
+    m = new Move(2,7);
+    expect(false, b.isValidMove(m, WHITE));
+    expect(true, b.isValidMove(m, BLACK));
+    m = new Move(1,5);
+    expect(false, b.isValidMove(m, WHITE));
+    m = new Move(7,7);
+    expect(false, b.isValidMove(m, BLACK));
   }
 }
