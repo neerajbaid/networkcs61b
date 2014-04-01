@@ -36,7 +36,7 @@ public class Board
   // CHECKING VALID MOVE
 
   private boolean isOnGoal(Piece piece) {
-    return piece.coordinate[0] == 0 && piece.coordinate[1] != 0 || piece.coordinate[1] == 0 && piece.coordinate[0] != 0;   
+    return piece.x == 0 && piece.y != 0 || piece.y == 0 && piece.x != 0;
   }
 
   public boolean isOnInvalidGoal(int x, int y, int color) {
@@ -56,9 +56,7 @@ public class Board
     return false;
   }
 
-  public boolean hasNeighbor(int[] coordinate, int color) {
-    int x = coordinate[0];
-    int y = coordinate[1];
+  public boolean hasNeighbor(int x, int y, int color) {
     for (int i = -1; i < 2; i++) {
       for (int j = -1; j < 2; j++) {
         try{
@@ -126,8 +124,9 @@ public class Board
       piece = new Piece(color, move.x1, move.y1);
     }
     board[move.x1][move.y1] = piece;
-    piece.coordinate = new int[] {move.x1, move.y1};
-    piece.neighbors = (hasNeighbor(piece.coordinate, color) ? 1 : 0);
+    piece.x = move.x1;
+    piece.y = move.y1;
+    piece.neighbors = (hasNeighbor(piece.x, piece.y, color) ? 1 : 0);
   }
 
   public void undoMove(Move move, int color) {
@@ -137,8 +136,9 @@ public class Board
     if (move.moveKind == move.STEP) {
       Piece piece = board[move.x1][move.y1];
       board[move.x2][move.y2] = piece;
-      piece.coordinate = new int[] {move.x2, move.y2};
-      piece.neighbors = hasNeighbor(piece.coordinate, color) ? 1 : 0;
+      piece.x = move.x1;
+      piece.y = move.y1;
+      piece.neighbors = hasNeighbor(piece.x, piece.y, color) ? 1 : 0;
     }
     board[move.x1][move.y1] = null;
   }
@@ -165,7 +165,6 @@ public class Board
 
   public Chain findNetwork(Piece piece, Chain currentNetwork, int prevDirection)
   {
-    // DList endZonePieces = endZonePieces(color);
     if (pieceIsInTargetEndZone(piece, currentNetwork))
       return currentNetwork;
     for (int direction : DIRECTIONS)
@@ -191,24 +190,24 @@ public class Board
   }
 
   public boolean pieceIsInTargetEndZone(Piece piece, Chain network) {
-    int x = piece.coordinate[0];
-    int y = piece.coordinate[1];
+    int x = piece.x;
+    int y = piece.y;
     int color = network.color;
     if (isOnInvalidGoal(x,y,color)) {
       return false;
     }
-    int startX = network.first().coordinate[0];
-    int startY = network.first().coordinate[1];
+    int startX = network.first().x;
+    int startY = network.first().y;
     if (color == WHITE_COLOR) {
-      return startX != piece.coordinate[0];
+      return startX != piece.x;
     }
     // black:
-    return startY != piece.coordinate[1];
+    return startY != piece.y;
   }
 
   public Piece findNextPieceInDirection(Piece piece, int direction)
   {
-    int[] coordinate = piece.coordinate;
+    int[] coordinate = {piece.x, piece.y};
     while (pieceAtCoordinate(coordinate) == null)
     {
       if (!containsCoordinate(coordinate))
@@ -221,36 +220,40 @@ public class Board
 
   public int[] incrementCoordinateInDirection(int[] coordinate, int direction)
   {
+    int x = coordinate[0];
+    int y = coordinate[1];
     if (direction == DIRECTION_UP)
-      coordinate[1]--;
+      y--;
     else if (direction == DIRECTION_UP_RIGHT)
     {
-      coordinate[0]++;
-      coordinate[1]--;
+      x++;
+      y--;
     }
     else if (direction == DIRECTION_RIGHT)
-      coordinate[0]++;
+      x++;
     else if (direction == DIRECTION_DOWN_RIGHT)
     {
-      coordinate[0]++;
-      coordinate[1]++;
+      x++;
+      y++;
     }
     else if (direction == DIRECTION_DOWN)
-      coordinate[1]++;
+      y++;
     else if (direction == DIRECTION_DOWN_LEFT)
     {
-      coordinate[0]--;
-      coordinate[1]++;
+      x--;
+      y++;
     }
     else if (direction == DIRECTION_LEFT)
-      coordinate[0]--;
+      x--;
     else if (direction == DIRECTION_UP_LEFT)
     {
-      coordinate[0]--;
-      coordinate[1]--;
+      x--;
+      y--;
     }
     else
       System.out.println("direction error");
+    coordinate[0] = x;
+    coordinate[1] = y;
     return coordinate;
   }
 
@@ -258,13 +261,17 @@ public class Board
 
   public boolean containsCoordinate(int[] coordinate)
   {
-    return (coordinate[0] < LENGTH && coordinate[0] > 0
-            && coordinate[1] < LENGTH && coordinate[1] > 0);
+    int x = coordinate[0];
+    int y = coordinate[1];
+    return (x < LENGTH && x > 0
+            && y < LENGTH && y > 0);
   }
 
   public Piece pieceAtCoordinate(int[] coordinate)
   {
-    return board[coordinate[0]][coordinate[1]];
+    int x = coordinate[0];
+    int y = coordinate[1];
+    return board[x][y];
   }
 
   public DList beginningZonePieces(int color)
@@ -364,5 +371,10 @@ public class Board
     }
     
     return 0;
+  }
+
+
+  public static void main() {
+
   }
 }
