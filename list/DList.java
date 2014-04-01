@@ -144,9 +144,10 @@ public class DList extends List {
 
   public DList copy() {
     DList copy = new DList();
-    copy.insertBack(front().item());
-    for (ListNode node : this) {
-      copy.insertBack(node.item());
+    DListNode current = head.next;
+    while (current != head) {
+      copy.insertBack(current.item());
+      current = current.next;
     }
     return copy;
   }

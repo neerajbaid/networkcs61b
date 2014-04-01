@@ -15,11 +15,12 @@ public class ListIterator implements Iterator<ListNode> {
   }
 
   public ListNode next() {
-    if (!hasNext() || !current.isValidNode()) {
+    if (!current.isValidNode()) {
       return null;
     }
+    ListNode temp = current;
     current = current.next();
-    return current;
+    return temp;
   }
 
   public void remove() {

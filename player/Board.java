@@ -163,35 +163,27 @@ public class Board
     System.out.println("beginning zone: " + beginningZonePieces.toString());
     System.out.println("first beginning piece: " + beginningZonePieces.front().item().toString());
     DList networks = new DList();
+    int length = beginningZonePieces.length();
+    ListNode pieceNode = beginningZonePieces.front();
 
-    Piece piece = (Piece) beginningZonePieces.front().item();
-    System.out.println("starting piece: " + piece);
-    Chain beginning = new Chain(color);
-    beginning.addPiece(piece);
-    System.out.println("starting chain: " + beginning.toString());
-    Chain network = findNetwork(piece, beginning, DIRECTION_NONE);
-    if (network == null)
-      System.out.println("returned completed network, network is null");
-    else
-      System.out.println("returned completed network, network is not null");
-    if (network != null)
-      networks.insertFront(network);
-
-    for (ListNode pieceNode : beginningZonePieces) //fast enumeration through a DList skips the first item
+    while (length > 0)
     {
-      piece = (Piece) pieceNode.item();
+      Piece piece = (Piece) pieceNode.item();
       System.out.println("starting piece: " + piece);
-      beginning = new Chain(color);
+      Chain beginning = new Chain(color);
       beginning.addPiece(piece);
       System.out.println("starting chain: " + beginning.toString());
-      network = findNetwork(piece, beginning, DIRECTION_NONE);
+      Chain network = findNetwork(piece, beginning, DIRECTION_NONE);
       if (network == null)
         System.out.println("returned completed network, network is null");
       else
         System.out.println("returned completed network, network is not null");
       if (network != null)
         networks.insertFront(network);
+      length--;
+      pieceNode = pieceNode.next();
     }
+
     return networks;
   }
 
@@ -228,6 +220,7 @@ public class Board
       }
       else
       {
+        System.out.println("current network before copy: " + currentNetwork.toString());
         Chain next = currentNetwork.copy();
         System.out.println("current network before adding: " + next.toString());
         System.out.println("next piece: " + nextPiece.toString());

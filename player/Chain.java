@@ -15,8 +15,6 @@ public class Chain
 
   public boolean contains(Piece piece)
   {
-    if (pieces.front().item() == piece)
-      return true;
     return pieces.contains(piece); //fast enumeration here skips first piece
   }
 
