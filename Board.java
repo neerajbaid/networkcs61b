@@ -83,7 +83,7 @@ public class Board
 
   public boolean isValidMove(Move move){
     int difference = move.x1 - move.y1;
-    boolean notInCorner = difference != 0 && difference != this.board.length;   
+    boolean notInCorner = difference != 0 && difference != this.board.length;
     boolean pieceThere = this.board[move.x1][move.y1] != null;
     
     //count how many pieces in vacinity
@@ -91,7 +91,7 @@ public class Board
     for (int i = -1; i < 2; i++) {
       for (int j = -1; j < 2; j++) {
         try{
-          counter += (int)(this.board[move.x1 + i][move.y1 + j] != null);   
+          counter += (int)(this.board[move.x1 + i][move.y1 + j] != null);
         } catch(Exception e){}
       }
     }
@@ -161,7 +161,7 @@ public class Board
         continue;
       else if (currentNetwork.contains(piece))
         continue;
-      else if (nextPiece.getColor() != piece.getColor())
+      else if (nextPiece.color != piece.color)
         continue;
       else
       {
@@ -173,7 +173,7 @@ public class Board
 
   public Piece findNextPieceInDirection(Piece piece, int direction)
   {
-    int[] coordinate = piece.getCoordinate();
+    int[] coordinate = piece.coordinate;
     while (pieceAtCoordinate(coordinate) == null)
     {
       if (!containsCoordinate(coordinate))
@@ -239,7 +239,7 @@ public class Board
     {
       for (int i = 1; i < board[0].length-1)
       {
-        int[] coordinate = [i,0];
+        int[] coordinate = {i,0};
         Piece piece = pieceAtCoordinate(coordinate);
         if (piece != null)
           pieces.insertBack(piece);
@@ -249,7 +249,7 @@ public class Board
     {
       for (int i = 1; i < board[0].length-1)
       {
-        int[] coordinate = [0,i];
+        int[] coordinate = {0,i};
         Piece piece = pieceAtCoordinate(coordinate);
         if (piece != null)
           pieces.insertBack(piece);
@@ -266,7 +266,7 @@ public class Board
     {
       for (int i = 1; i < board[0].length-1)
       {
-        int[] coordinate = [i,board[0].length-1];
+        int[] coordinate = {i,board[0].length-1};
         Piece piece = pieceAtCoordinate(coordinate);
         if (piece != null)
           pieces.insertBack(piece);
@@ -276,7 +276,7 @@ public class Board
     {
       for (int i = 1; i < board[0].length-1)
       {
-        int[] coordinate = [board[0].length-1,i];
+        int[] coordinate = {board[0].length-1,i};
         Piece piece = pieceAtCoordinate(coordinate);
         if (piece != null)
           pieces.insertBack(piece);
