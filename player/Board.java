@@ -57,12 +57,12 @@ public class Board
     return false;
   }
 
-  public boolean hasNeighbor(int x, int y, int color) {
+  private boolean isInChainedCluster(int x, int y, Piece original, int color) {
     for (int i = -1; i < 2; i++) {
       for (int j = -1; j < 2; j++) {
         try{
           Piece piece = board[x + i][y + j];
-          if (piece == null || (i == 0 && j == 0 )) {
+          if (piece == null || (i == 0 && j == 0 ) || original == piece) {
             continue;
           }
           if (piece.color == color) {
@@ -85,12 +85,15 @@ public class Board
             continue;
           }
           if (piece.color == color) {
-            counter += 1 + piece.neighbors;
+            counter += 1;
+            if (isInChainedCluster(x + i, y + j, piece, color)) {
+              return true;
+            }
           }
         } catch(Exception e){}
       }
     }
-    return counter > 2;
+    return counter >= 2;
   }
 
   public boolean isValidMove(Move move, int color){
@@ -127,7 +130,6 @@ public class Board
     board[move.x1][move.y1] = piece;
     piece.x = move.x1;
     piece.y = move.y1;
-    piece.neighbors = (hasNeighbor(piece.x, piece.y, color) ? 1 : 0);
   }
 
   public void undoMove(Move move, int color) {
@@ -139,7 +141,6 @@ public class Board
       board[move.x2][move.y2] = piece;
       piece.x = move.x1;
       piece.y = move.y1;
-      piece.neighbors = hasNeighbor(piece.x, piece.y, color) ? 1 : 0;
     }
     board[move.x1][move.y1] = null;
   }
@@ -420,13 +421,16 @@ public class Board
     expect(false, b.isInCorner(5,5));
     expect(false, b.isInCorner(0,1));
 
-    // performValidMove
+    // performValidMove and undoMove
     Move m = new Move(1,5);
     b.performValidMove(m, BLACK);
     print(b);
     
     m = new Move(3,6,1,5);
     b.performValidMove(m, BLACK);
+    print(b);
+
+    b.undoValidMove(m, BLACK);
     print(b);
 
   }
