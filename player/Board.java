@@ -1,6 +1,7 @@
+package player;
+
 import list.*;
 import dict.*;
-import player.*;
 
 public class Board
 {

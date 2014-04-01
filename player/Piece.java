@@ -1,3 +1,5 @@
+package player;
+
 public class Piece
 {
   public int[] coordinate;
