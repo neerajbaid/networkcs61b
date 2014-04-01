@@ -80,7 +80,7 @@ public class Board
   public int getWidth(){
     return this.board.length;
   }
-  
+
   public boolean isValidMove(Move move){
     int difference = move.x1 - move.y1;
     boolean notInCorner = difference != 0 && difference != this.board.length;   
@@ -103,7 +103,23 @@ public class Board
     return notInCorner && !pieceThere && !clusterAround;
     
   }
-  
+
+  // Must be a valid move. If not valid, will break
+  public void performValidMove(Move move, int color) {
+    if (move.moveKind = move.QUIT) {
+      return;
+    }
+    Piece piece;
+    if (move.moveKind = move.STEP) {
+      piece = board[move.x2][move.y2];
+      board[move.x2][move.y2] = null;
+    }
+    else {
+      piece = new Piece(color, move.x1, move.y1);
+    }
+    board[move.x1,move.y1] = piece;
+  }
+
 
   // # pragma mark - Network Finding #iOSProgrammers #ye
 
