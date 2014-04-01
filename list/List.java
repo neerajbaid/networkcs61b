@@ -78,7 +78,7 @@ public abstract class List implements Iterable<ListNode>{
 
   public abstract boolean contains(Object obj);
 
-  public abstract String toString();
-
   public abstract Iterator<ListNode> iterator();
+
+  public abstract String toString();
 }
