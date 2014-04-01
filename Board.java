@@ -9,6 +9,7 @@ public class Board
   public static final int WHITE_COLOR = 0;
   public static final int BLACK_COLOR = 1;
 
+  public static final int DIRECTION_NONE = -1;
   public static final int DIRECTION_UP = 0;
   public static final int DIRECTION_UP_RIGHT = 1;
   public static final int DIRECTION_RIGHT = 2;
@@ -135,7 +136,7 @@ public class Board
     for (ListNode pieceNode : beginningZonePieces)
     {
       Piece piece = (Piece) pieceNode.item();
-      Network network = findNetwork(piece, new Network(), color);
+      Network network = findNetwork(piece, new Network(color), DIRECTION_NONE);
       if (network != null)
         networks.insertFront(network);
     }
@@ -145,26 +146,31 @@ public class Board
       return networks;
   }
 
-  public Network findNetwork(Piece piece, Network currentNetwork, int color)
+  public Network findNetwork(Piece piece, Network currentNetwork, int prevDirection)
   {
-    DList endZonePieces = endZonePieces(color);
+    // DList endZonePieces = endZonePieces(color);
     if (pieceIsInEndZone(piece))
       return currentNetwork;
     for (int direction : DIRECTIONS)
     {
+      if (direction == prevDirection) {
+        continue;
+      }
       Piece nextPiece = findNextPieceInDirection(piece, direction);
       if (nextPiece == null)
         continue;
-      else if (currentNetwork.contains(piece))
+      else if (currentNetwork.contains(nextPiece)) // very bad performance here
         continue;
-      else if (nextPiece.color != piece.color)
+      else if (nextPiece.color != currentNetwork.color)
         continue;
       else
       {
+        currentNetwork = currentNetwork.copy();
         currentNetwork.addPiece(nextPiece);
-        findAllNetworks(nextPiece, currentNetwork, direction);
+        return findNetwork(nextPiece, currentNetwork, direction);
       }
     }
+    return null;
   }
 
   public Piece findNextPieceInDirection(Piece piece, int direction)
@@ -281,5 +287,9 @@ public class Board
     else {
       System.out.println("color error");
     }
+  }
+
+  public boolean pieceIsInEndZone(int color) {
+    
   }
 }
