@@ -55,9 +55,7 @@ public class MachinePlayer extends Player {
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
-
-    Moves[] validMoves = this.validMoves(board);
-    return new Move();
+    return chooseMove(color, color, !color, 1);
   } 
 
   // If the Move m is legal, records the move as a move by the opponent
@@ -65,7 +63,11 @@ public class MachinePlayer extends Player {
   // illegal, returns false without modifying the internal state of "this"
   // player.  This method allows your opponents to inform you of their moves.
   public boolean opponentMove(Move m) {
-    return false;
+    if (!board.isValidMove(m)) {
+      return false;
+    }
+    board.performValidMove(m, !color);
+    return true;
   }
 
   // If the Move m is legal, records the move as a move by "this" player
@@ -74,13 +76,12 @@ public class MachinePlayer extends Player {
   // player.  This method is used to help set up "Network problems" for your
   // player to solve.
   public boolean forceMove(Move m) {
-    return false;
+    if (!board.isValidMove(m)) {
+      return false;
+    }
+    board.performValidMove(m, color);
+    return true;
   }
-
-  private void undoMove(Move move) {
-    
-  }
-
 
   public Move chooseMove(int color, int alpha, int beta, int depth) {
     if (depth == searchDepth) {
@@ -101,7 +102,7 @@ public class MachinePlayer extends Player {
     }
     for (Move move : validMoves) {
       board.performValidMove(move, color);
-      replyBest = chooseMove(!color, alpha, beta);
+      replyBest = chooseMove(!color, alpha, beta, depth+1);
       board.undoMove(move);
       if (side == WHITE_COLOR && replyBestScore > myBestScore) {
         myBest = move;
