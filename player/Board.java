@@ -305,7 +305,7 @@ public class Board
           pieces.insertBack(piece);
       }
     }
-    return null;
+    return pieces;
   }
 
   public DList endZonePieces(int color)
@@ -331,7 +331,7 @@ public class Board
           pieces.insertBack(piece);
       }
     }
-    return null;
+    return pieces;
   }
 
   public int evaluate(int playerIn) {
@@ -470,5 +470,24 @@ public class Board
     expect(false, b.isValidMove(m, WHITE));
     m = new Move(7,7);
     expect(false, b.isValidMove(m, BLACK));
+
+    // FINDING NETWORKS
+    print("");
+    print("FINDING NETWORKS");
+
+    //beginning zone pieces
+    expect(0,b.beginningZonePieces(WHITE).length());
+    m = new Move(0,2);
+    b.performValidMove(m, WHITE);
+    expect(1,b.beginningZonePieces(WHITE).length());
+    m = new Move(2,0);
+    b.performValidMove(m, BLACK);
+    expect(1,b.beginningZonePieces(BLACK).length());
+
+    //Find Network:
+    m = new Move(4,3);
+    b.performValidMove(m, WHITE);
+    m = new Move(2,3);
+    b.performValidMove(m, WHITE);
   }
 }
