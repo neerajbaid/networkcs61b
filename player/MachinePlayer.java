@@ -2,6 +2,8 @@
 
 package player;
 
+import list.*;
+
 /**
  *  An implementation of an automatic Network player.  Keeps track of moves
  *  made by both players.  Can select a move for itself.
@@ -26,26 +28,26 @@ public class MachinePlayer extends Player {
   // either 0 (black) or 1 (white).  (White has the first move.)
   public MachinePlayer(int color, int searchDepth) {
     board = new Board();
-    this.searchDepth searchDepth;
+    this.searchDepth = searchDepth;
     this.color = color;
   }
   
-  public Moves[] validMoves(Board board){
+  public Move[] validMoves(Board board){
     DList moves = new DList();
     
-    for(int i = 0; i < board.getWidth(); i++){
-      for(int j = 0; j < board.getHeight(); j++){   
+    for(int i = 0; i < board.LENGTH; i++){
+      for(int j = 0; j < board.LENGTH; j++){   
         Move move = new Move(i, j);
-        if(board.isValidMove(move)){
-          moves.push(move);
+        if(board.isValidMove(move, color)){
+          moves.insertBack(move);
         }
       }
     }
     
-    Moves[] arr = new Moves[moves.length()];   
+    Move[] arr = new Move[moves.length()];   
     ListNode current = moves.front();
     for(int i = 0; i < arr.length; i++){
-      arr[i] = current.item();
+      arr[i] = (Move) current.item();
       current = current.next();
     }
     
@@ -55,17 +57,33 @@ public class MachinePlayer extends Player {
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
-    return chooseMove(color, color, !color, 1);
+    return chooseMove(color, color, flipColor(color), 1);
   }
 
-  public Move chooseMove(int color, int alpha, int beta, int depth) {
+  public Move chooseMove(int side, int alpha, int beta, int depth) {
+    Move myBest, replyBest;
+    int myBestScore, replyBestScore = -1; // check the value of this
+    Move[] validMoves = validMoves(board);
+
     if (depth == searchDepth) {
-      return board.evaluate(side);
+      myBestScore = -1;
+      myBest = validMoves[0];
+      for (Move move : validMoves) {
+        board.performValidMove(move, side);
+        int score = board.evaluate(side);
+        board.undoMove(move, side);
+        if (color == WHITE_COLOR && score > myBestScore) {
+          myBestScore = score;
+          myBest = move;
+        }
+        if (color == BLACK_COLOR && score < myBestScore) {
+          myBestScore = score;
+          myBest = move;
+        }
+      }
+      return myBest;
     }
 
-    Moves[] validMoves = validMoves(board)
-    Move myBest, replyBest;
-    int myBestScore, replyBestScore;
     // if ("this" Grid is full or has a win) {
       // return a Best with the Grid’s score, no move;
       // return new Move();
@@ -75,10 +93,11 @@ public class MachinePlayer extends Player {
     } else {
       myBestScore = beta;
     }
+    myBest = validMoves[0];
     for (Move move : validMoves) {
-      board.performValidMove(move, color);
-      replyBest = chooseMove(!color, alpha, beta, depth+1);
-      board.undoMove(move, color);
+      board.performValidMove(move, side);
+      replyBest = chooseMove(flipColor(side), alpha, beta, depth+1);
+      board.undoMove(move, side);
       if (side == WHITE_COLOR && replyBestScore > myBestScore) {
         myBest = move;
         myBestScore = replyBestScore;
@@ -100,10 +119,10 @@ public class MachinePlayer extends Player {
   // illegal, returns false without modifying the internal state of "this"
   // player.  This method allows your opponents to inform you of their moves.
   public boolean opponentMove(Move m) {
-    if (!board.isValidMove(m)) {
+    if (!board.isValidMove(m, flipColor(color))) {
       return false;
     }
-    board.performValidMove(m, !color);
+    board.performValidMove(m, flipColor(color));
     return true;
   }
 
@@ -113,11 +132,15 @@ public class MachinePlayer extends Player {
   // player.  This method is used to help set up "Network problems" for your
   // player to solve.
   public boolean forceMove(Move m) {
-    if (!board.isValidMove(m)) {
+    if (!board.isValidMove(m, color)) {
       return false;
     }
     board.performValidMove(m, color);
     return true;
+  }
+
+  private int flipColor(int color) {
+    return Math.abs(color - 1);
   }
 
 }
