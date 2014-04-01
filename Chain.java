@@ -1,12 +1,12 @@
 import list.*;
 import dict.*;
 
-public class Network
+public class Chain
 {
   public int color;
   public DList pieces;
 
-  public Network(int color) {
+  public Chain(int color) {
     pieces = new DList();
     this.color = color;
   }
@@ -25,8 +25,8 @@ public class Network
     return pieces;
   }
 
-  public Network copy() {
-    Network copy = new Network(color);
+  public Chain copy() {
+    Chain copy = new Chain(color);
     copy.pieces = pieces.copy();
     return copy;
   }

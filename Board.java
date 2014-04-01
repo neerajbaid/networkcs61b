@@ -152,7 +152,7 @@ public class Board
     for (ListNode pieceNode : beginningZonePieces)
     {
       Piece piece = (Piece) pieceNode.item();
-      Network network = findNetwork(piece, new Network(color), DIRECTION_NONE);
+      Chain network = findNetwork(piece, new Chain(color), DIRECTION_NONE);
       if (network != null)
         networks.insertFront(network);
     }
@@ -162,7 +162,7 @@ public class Board
       return networks;
   }
 
-  public Network findNetwork(Piece piece, Network currentNetwork, int prevDirection)
+  public Chain findNetwork(Piece piece, Chain currentNetwork, int prevDirection)
   {
     // DList endZonePieces = endZonePieces(color);
     if (pieceIsInTargetEndZone(piece, currentNetwork))
@@ -189,7 +189,7 @@ public class Board
     return null;
   }
 
-  public boolean pieceIsInTargetEndZone(Piece piece, Network network) {
+  public boolean pieceIsInTargetEndZone(Piece piece, Chain network) {
     int x = piece.coordinate[0];
     int y = piece.coordinate[1];
     int color = network.color;
@@ -330,7 +330,7 @@ public class Board
     boolean reachesGoal = false;
     ListNode current = networks.front();
     while(current != null) {
-      Network network = (Network) current.item();
+      Chain network = (Chain) current.item();
       
       DList pieces = network.getPieces();
       Piece front = (Piece) pieces.front().item();
@@ -349,7 +349,7 @@ public class Board
     reachesGoal = false;
     current = networks.front();
     while(current != null){
-      Network network = (Network) current.item();
+      Chain network = (Chain) current.item();
       
       DList pieces = network.getPieces();   
       Piece front = (Piece) pieces.front().item();
