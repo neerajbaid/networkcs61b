@@ -271,8 +271,8 @@ public class Board
   {
     int x = coordinate[0];
     int y = coordinate[1];
-    return (x < LENGTH && x > 0
-            && y < LENGTH && y > 0);
+    return (x < LENGTH && x >= 0
+            && y < LENGTH && y >= 0);
   }
 
   public Piece pieceAtCoordinate(int[] coordinate)
@@ -287,17 +287,7 @@ public class Board
     DList pieces = new DList();
     if (color == WHITE)
     {
-      for (int i = 1; i < board[0].length-1; i++)
-      {
-        int[] coordinate = {i,0};
-        Piece piece = pieceAtCoordinate(coordinate);
-        if (piece != null)
-          pieces.insertBack(piece);
-      }
-    }
-    else if (color == BLACK)
-    {
-      for (int i = 1; i < board[0].length-1; i++)
+      for (int i = 1; i < END_INDEX; i++)
       {
         int[] coordinate = {0,i};
         Piece piece = pieceAtCoordinate(coordinate);
@@ -305,8 +295,16 @@ public class Board
           pieces.insertBack(piece);
       }
     }
-    else
-      System.out.println("color error");
+    else if (color == BLACK)
+    {
+      for (int i = 1; i < END_INDEX; i++)
+      {
+        int[] coordinate = {i,0};
+        Piece piece = pieceAtCoordinate(coordinate);
+        if (piece != null)
+          pieces.insertBack(piece);
+      }
+    }
     return null;
   }
 
@@ -315,9 +313,9 @@ public class Board
     DList pieces = new DList();
     if (color == WHITE)
     {
-      for (int i = 1; i < board[0].length-1; i++)
+      for (int i = 1; i < END_INDEX; i++)
       {
-        int[] coordinate = {i,board[0].length-1};
+        int[] coordinate = {END_INDEX, i};
         Piece piece = pieceAtCoordinate(coordinate);
         if (piece != null)
           pieces.insertBack(piece);
@@ -325,16 +323,13 @@ public class Board
     }
     else if (color == BLACK)
     {
-      for (int i = 1; i < board[0].length-1; i++)
+      for (int i = 1; i < END_INDEX; i++)
       {
-        int[] coordinate = {board[0].length-1, i};
+        int[] coordinate = {i,END_INDEX};
         Piece piece = pieceAtCoordinate(coordinate);
         if (piece != null)
           pieces.insertBack(piece);
       }
-    }
-    else {
-      System.out.println("color error");
     }
     return null;
   }
@@ -381,7 +376,9 @@ public class Board
     return 0;
   }
 
-  // TEST
+
+  // TESTING CODE:
+
   public String toString() {
     String result = "";
     for (int y = 0; y < LENGTH; y ++ ) {
