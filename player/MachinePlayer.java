@@ -82,28 +82,33 @@ public class MachinePlayer extends Player {
   }
 
 
-  public Move chooseMove(boolean side, int alpha, int beta) {
+  public Move chooseMove(int color, int alpha, int beta, int depth) {
+    if (depth == searchDepth) {
+      return board.evaluate(side);
+    }
+
+    Moves[] validMoves = validMoves(board)
     Move myBest, replyBest;
     int myBestScore, replyBestScore;
-    if ("this" Grid is full or has a win) {
+    // if ("this" Grid is full or has a win) {
       // return a Best with the Grid’s score, no move;
-      return new Move();
-    }
+      // return new Move();
+    // }
     if (side == WHITE_COLOR) { //WHITE_COLOR = COMPUTER
       myBestScore = alpha;
     } else {
       myBestScore = beta;
     }
-    for (each legal move m) {
-      perform move m; // Modifies "this" Grid
-      replyBest = chooseMove(!side, alpha, beta);
-      undo move m; // Restores "this" Grid
+    for (Move move : validMoves) {
+      board.performValidMove(move, color);
+      replyBest = chooseMove(!color, alpha, beta);
+      board.undoMove(move);
       if (side == WHITE_COLOR && replyBestScore > myBestScore) {
-        myBest = m;
+        myBest = move;
         myBestScore = replyBestScore;
         alpha = replyBestScore;
       } else if (side == BLACK_COLOR && replyBestScore < myBestScore) {
-        myBest = m;
+        myBest = move;
         myBestScore = replyBestScore;
         beta = replyBestScore;
       }
@@ -113,6 +118,5 @@ public class MachinePlayer extends Player {
     }
     return myBest;
   }
-
 
 }
