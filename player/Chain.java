@@ -13,16 +13,18 @@ public class Chain
     this.color = color;
   }
 
-  public boolean contains(Piece piece)   
+  public boolean contains(Piece piece)
   {
-    return pieces.contains(piece);
+    if (pieces.front().item() == piece)
+      return true;
+    return pieces.contains(piece); //fast enumeration here skips first piece
   }
 
   public void addPiece(Piece piece)
   {
     pieces.insertBack(piece);
   }
-  
+
   public DList getPieces(){
     return pieces;
   }
@@ -39,5 +41,10 @@ public class Chain
       return (Piece) node.item();
     }
     return null;
+  }
+
+  public String toString() {
+    String toReturn = pieces.toString();
+    return toReturn;
   }
 }

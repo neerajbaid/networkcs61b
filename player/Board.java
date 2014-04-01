@@ -23,16 +23,19 @@ public class Board
   public static final int[] DIRECTIONS = {DIRECTION_UP, DIRECTION_UP_RIGHT,
     DIRECTION_RIGHT, DIRECTION_DOWN_RIGHT, DIRECTION_DOWN,
     DIRECTION_DOWN_LEFT, DIRECTION_LEFT, DIRECTION_UP_LEFT};
-  
+
   private static final int WHITE_WIN = 0, BLACK_WIN = 1;
 
   public static final int LENGTH = 8;
   public static final int END_INDEX = 7;
 
+  public static DList current_networks;
+
   public Board() {
     board = new Piece[LENGTH][LENGTH];
+    current_networks = new DList();
   }
-  
+
 
   // CHECKING VALID MOVE
   protected static int flipColor(int color) {
@@ -157,40 +160,81 @@ public class Board
   public DList findAllNetworks(int color)
   {
     DList beginningZonePieces = beginningZonePieces(color);
+    System.out.println("beginning zone: " + beginningZonePieces.toString());
+    System.out.println("first beginning piece: " + beginningZonePieces.front().item().toString());
     DList networks = new DList();
-    for (ListNode pieceNode : beginningZonePieces)
+
+    Piece piece = (Piece) beginningZonePieces.front().item();
+    System.out.println("starting piece: " + piece);
+    Chain beginning = new Chain(color);
+    beginning.addPiece(piece);
+    System.out.println("starting chain: " + beginning.toString());
+    Chain network = findNetwork(piece, beginning);
+    if (network == null)
+      System.out.println("returned completed network, network is null");
+    else
+      System.out.println("returned completed network, network is not null");
+    if (network != null)
+      networks.insertFront(network);
+
+    for (ListNode pieceNode : beginningZonePieces) //fast enumeration through a DList skips the first item
     {
-      Piece piece = (Piece) pieceNode.item();
-      Chain network = findNetwork(piece, new Chain(color), DIRECTION_NONE);
+      piece = (Piece) pieceNode.item();
+      System.out.println("starting piece: " + piece);
+      beginning = new Chain(color);
+      beginning.addPiece(piece);
+      System.out.println("starting chain: " + beginning.toString());
+      network = findNetwork(piece, beginning);
+      if (network == null)
+        System.out.println("returned completed network, network is null");
+      else
+        System.out.println("returned completed network, network is not null");
       if (network != null)
         networks.insertFront(network);
     }
     return networks;
   }
 
-  public Chain findNetwork(Piece piece, Chain currentNetwork, int prevDirection)
+  public Chain findNetwork(Piece piece, Chain currentNetwork)
   {
     if (pieceIsInTargetEndZone(piece, currentNetwork))
-      return currentNetwork;
+    {
+      System.out.println("piece is in target end zone");
+      Chain completed = currentNetwork.copy();
+      System.out.println("complete network one: " + currentNetwork.toString());
+      System.out.println("complete network two: " + completed.toString());
+      current_networks.insertFront(completed);
+      return completed;
+    }
     for (int direction : DIRECTIONS)
     {
-      if (direction == prevDirection) {
-        continue;
-      }
       Piece nextPiece = findNextPieceInDirection(piece, direction);
       if (nextPiece == null)
+      {
+        System.out.println("next piece is null");
         continue;
-      else if (currentNetwork.contains(nextPiece)) // very bad performance here
+      }
+      else if (currentNetwork.contains(nextPiece))
+      {
+        System.out.println("network contains piece");
         continue;
+      }
       else if (nextPiece.color != currentNetwork.color)
+      {
+        System.out.println("piece of opposite color blocking");
         continue;
+      }
       else
       {
-        currentNetwork = currentNetwork.copy();
-        currentNetwork.addPiece(nextPiece);
-        return findNetwork(nextPiece, currentNetwork, direction);
+        Chain next = currentNetwork.copy();
+        System.out.println("current network before adding: " + next.toString());
+        System.out.println("next piece: " + nextPiece.toString());
+        next.addPiece(nextPiece);
+        System.out.println("current network after adding: " + next.toString());
+        findNetwork(nextPiece, next);
       }
     }
+    System.out.println("return null");
     return null;
   }
 
@@ -216,7 +260,10 @@ public class Board
 
   public Piece findNextPieceInDirection(Piece piece, int direction)
   {
-    int[] coordinate = incrementCoordinateInDirection(new int[] {piece.x, piece.y}, direction);
+    int[] pieceCoordinate = new int[] {piece.x, piece.y};
+    System.out.println("initial coordinate: " + pieceCoordinate[0] + " " + pieceCoordinate[1] + " direction: " + direction);
+    int[] coordinate = incrementCoordinateInDirection(pieceCoordinate, direction);
+    System.out.println("incremented coordinate: " + coordinate[0] + " " + coordinate[1]);
     while (containsCoordinate(coordinate))
     {
       Piece next = pieceAtCoordinate(coordinate);
@@ -224,6 +271,7 @@ public class Board
         return next;
       }
       coordinate = incrementCoordinateInDirection(coordinate, direction);
+      System.out.println("incremented coordinate: " + coordinate[0] + " " + coordinate[1]);
     }
     return null;
   }
@@ -336,21 +384,21 @@ public class Board
 
   public int evaluate(int playerIn) {
     int player = playerIn;
-    
+
     DList networks = this.findAllNetworks(player);
     boolean reachesGoal = false;
     ListNode current = networks.front();
     while(current != null) {
       Chain network = (Chain) current.item();
-      
+
       DList pieces = network.getPieces();
       Piece front = (Piece) pieces.front().item();
       Piece back = (Piece) pieces.back().item();
-      
+
       if(this.isOnValidGoal(front.x, front.y, playerIn) && this.isOnValidGoal(back.x, back.y, playerIn)) {
         return 1;
       }
-      
+
       current = current.next();
     }
 
@@ -361,18 +409,18 @@ public class Board
     current = networks.front();
     while(current != null){
       Chain network = (Chain) current.item();
-      
-      DList pieces = network.getPieces();   
+
+      DList pieces = network.getPieces();
       Piece front = (Piece) pieces.front().item();
       Piece back = (Piece) pieces.back().item();
 
       if(this.isOnValidGoal(front.x, front.y, playerIn) && this.isOnValidGoal(back.x, back.y, playerIn)) {
         return -1;
       }
-      
+
       current = current.next();
     }
-    
+
     return 0;
   }
 
@@ -431,7 +479,7 @@ public class Board
     Move m = new Move(1,5);
     b.performValidMove(m, BLACK);
     print(b);
-    
+
     m = new Move(3,6,1,5);
     b.performValidMove(m, BLACK);
     print(b);
@@ -507,8 +555,6 @@ public class Board
     expect(true, b.pieceIsInTargetEndZone(b.board[7][2], ch));
     expect(false, b.pieceIsInTargetEndZone(b.board[0][4], ch));
 
-
-
     //Find Network:
     m = new Move(4,3);
     b.performValidMove(m, WHITE);
@@ -517,8 +563,9 @@ public class Board
     m = new Move(0,3);
     b.performValidMove(m, WHITE);
     print(b);
-    expect(0, b.findAllNetworks(WHITE).length());
-
-
+    b.findAllNetworks(WHITE);
+    System.out.println("all networks: " + current_networks.toString());
+    // expect(3, b.findAllNetworks(WHITE).length());
+    expect(3, b.current_networks.length());
   }
 }
