@@ -142,6 +142,14 @@ public class DList extends List {
     return false;
   }
 
+  public DList copy() {
+    DList copy = new DList();
+    for (ListNode node : this) {
+      copy.insertBack(node.item());
+    }
+    return copy;
+  }
+
   /**
    *  toString() returns a String representation of this DList.
    *

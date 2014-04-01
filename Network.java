@@ -3,8 +3,13 @@ import dict.*;
 
 public class Network
 {
-  private int color;
-  private DList pieces;
+  public int color;
+  public DList pieces;
+
+  public Network(int color) {
+    pieces = new DList();
+    this.color = color;
+  }
 
   public boolean contains(Piece piece)   
   {
@@ -17,6 +22,12 @@ public class Network
   }
   
   public DList getPieces(){
-	  return this.pieces;
+    return pieces;
+  }
+
+  public Network copy() {
+    Network copy = new Network(color);
+    copy.pieces = pieces.copy();
+    return copy;
   }
 }
