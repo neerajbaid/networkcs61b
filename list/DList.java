@@ -2,6 +2,8 @@
 
 package list;
 
+import java.util.Iterator;
+
 /**
  *  A DList is a mutable doubly-linked list ADT.  Its implementation is
  *  circularly-linked and employs a sentinel node at the head of the list.
@@ -124,6 +126,20 @@ public class DList extends List {
    */
   public ListNode back() {
     return head.prev;
+  }
+
+
+  public Iterator<ListNode> iterator() {
+    return new ListIterator(this);
+  }
+
+  public boolean contains(Object obj) {
+    for (ListNode node : this) {
+      if (node.item() == obj) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

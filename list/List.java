@@ -1,14 +1,14 @@
 /* List.java */
-
 package list;
 
+import java.util.Iterator;
 /**
  *  A List is a mutable list ADT.  No implementation is provided.
  *
  *  DO NOT CHANGE THIS FILE.
  **/
 
-public abstract class List {
+public abstract class List implements Iterable<ListNode>{
 
   /**
    *  size is the number of items in the list.
@@ -75,6 +75,10 @@ public abstract class List {
    *
    *  @return a String representation of this List.
    */
+
+  public abstract boolean contains(Object obj);
+
   public abstract String toString();
 
+  public abstract Iterator<ListNode> iterator();
 }
