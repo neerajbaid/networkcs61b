@@ -27,26 +27,26 @@ public class Board
   }
 
   
-  public int evaluate(int playerIn){
+  public int evaluate(int playerIn) {
     int player = playerIn;
     
     SList networks = this.findAllNetworks(player);
     boolean reachesGoal = false;
     SListNode current = networks.front();
-    while(current != null){
+    while(current != null) {
       Network network = current.item();
       
-      SList pieces = network.getPieces();   
+      SList pieces = network.getPieces();
       Piece front = pieces.front();
       Piece back = pieces.back();
       
-      if(this.isOnGoal(front) && this.isOnGoal(back)){   
+      if(this.isOnGoal(front) && this.isOnGoal(back)) {
         return 1;
       }
       
       current = current.next();
     }
-    
+
     //switch players
     player = 1 - player;
     SList networks = this.findAllNetworks(player);
@@ -69,7 +69,7 @@ public class Board
     return 0;
   }
   
-  private boolean isOnGoal(Piece piece){
+  private boolean isOnGoal(Piece piece) {
     return piece.coordinate[0] == 0 && piece.coordinate[1] != 0 || piece.coordinate[1] == 0 && piece.coordinate[0] != 0;   
   }
   
@@ -137,9 +137,9 @@ public class Board
   {
     SList beginningZonePieces = beginningZonePieces(color);
     SList networks = new SList();
-    for (Piece piece in beginningZonePieces)
+    for (Piece piece : beginningZonePieces)
     {
-      Network network = findNetwork(piece, new Network())
+      Network network = findNetwork(piece, new Network());
       if (network != null)
         networks.insertFront(network);
     }
@@ -154,7 +154,7 @@ public class Board
     SList endZonePieces = endZonePieces(color);
     if (pieceIsInEndZone(piece))
       return currentNetwork;
-    for (int direction in DIRECTIONS)
+    for (int direction : DIRECTIONS)
     {
       Piece nextPiece = findNextPieceInDirection(piece, direction);
       if (nextPiece == null)
@@ -184,7 +184,7 @@ public class Board
     return pieceAtCoordinate(coordinate);
   }
 
-  public int[] incrementCoordinateInDirection(coordinate, direction)
+  public int[] incrementCoordinateInDirection(int[] coordinate, int direction)
   {
     if (direction == DIRECTION_UP)
       coordinate[1]--;
@@ -274,15 +274,16 @@ public class Board
     }
     else if (color == BLACK_COLOR)
     {
-      for (int i = 1; i < board[0].length-1, i++)
+      for (int i = 1; i < board[0].length-1; i++)
       {
-        int[] coordinate = {board[0].length-1,i};
+        int[] coordinate = {board[0].length-1, i};
         Piece piece = pieceAtCoordinate(coordinate);
         if (piece != null)
           pieces.insertBack(piece);
       }
     }
-    else
+    else {
       System.out.println("color error");
+    }
   }
 }
