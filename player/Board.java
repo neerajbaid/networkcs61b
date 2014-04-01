@@ -39,7 +39,7 @@ public class Board
     return Math.abs(color - 1);
   }
 
-  public boolean isOnValidGoal(int x, int y, int color) {
+  private boolean isOnValidGoal(int x, int y, int color) {
     if (isInCorner(x,y)) {
       return false;
     }
@@ -51,11 +51,11 @@ public class Board
     }
   }
 
-  public boolean isOnInvalidGoal(int x, int y, int color) {
+  private boolean isOnInvalidGoal(int x, int y, int color) {
     return isOnValidGoal(x,y,flipColor(color));
   }
 
-  public boolean isInCorner(int x, int y) {
+  private boolean isInCorner(int x, int y) {
     if (x == 0 || y == 0 || x == END_INDEX || y == END_INDEX) {
       int difference = Math.abs(x-y);
       return (difference == 0 || difference == END_INDEX);
@@ -80,7 +80,7 @@ public class Board
     return false;
   }
 
-  public boolean isInCluster(int x, int y, int color) {
+  private boolean isInCluster(int x, int y, int color) {
     //count how many pieces in vacinity
     int counter = 0;
     for (int i = -1; i < 2; i++) {
