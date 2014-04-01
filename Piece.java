@@ -1,6 +1,3 @@
-import list.*;
-import dict.*;
-
 public class Piece
 {
   public int[] coordinate;
@@ -11,6 +8,6 @@ public class Piece
 
   public Piece(int color, int x, int y) {
     this.color = color;
-    coordinate = {x, y};
+    coordinate = new int[] {x, y};
   }
 }
