@@ -36,16 +36,15 @@ public class Board
 
   // CHECKING VALID MOVE
 
-  private boolean isOnGoal(Piece piece) {
-    return piece.x == 0 && piece.y != 0 || piece.y == 0 && piece.x != 0;
-  }
-
-  public boolean isOnInvalidGoal(int x, int y, int color) {
+  public boolean isOnValidGoal(int x, int y, int color) {
+    if (isInCorner(x,y)) {
+      return false;
+    }
     if (color == WHITE) {
-      return y == 0 || y == END_INDEX;
+      return x == 0 || x == END_INDEX;
     }
     else {
-      return x == 0 || x == END_INDEX;
+      return y == 0 || y == END_INDEX;
     }
   }
 
@@ -106,7 +105,7 @@ public class Board
     if (board[x][y] != null) {
       return false;
     }
-    if (isOnInvalidGoal(x,y,color)) {
+    if (!isOnValidGoal(x,y,color)) {
       return false;
     }
     return !isInCluster(move.x1, move.y1, color);
@@ -195,7 +194,7 @@ public class Board
     int x = piece.x;
     int y = piece.y;
     int color = network.color;
-    if (isOnInvalidGoal(x,y,color)) {
+    if (!isOnValidGoal(x,y,color)) {
       return false;
     }
     int startX = network.first().x;
@@ -346,7 +345,7 @@ public class Board
       Piece front = (Piece) pieces.front().item();
       Piece back = (Piece) pieces.back().item();
       
-      if(this.isOnGoal(front) && this.isOnGoal(back)) {
+      if(this.isOnValidGoal(front.x, front.y, playerIn) && this.isOnValidGoal(back.x, back.y, playerIn)) {
         return 1;
       }
       
@@ -365,7 +364,7 @@ public class Board
       Piece front = (Piece) pieces.front().item();
       Piece back = (Piece) pieces.back().item();
 
-      if(this.isOnGoal(front) && this.isOnGoal(back)){
+      if(this.isOnValidGoal(front.x, front.y, playerIn) && this.isOnValidGoal(back.x, back.y, playerIn)) {
         return -1;
       }
       
@@ -403,15 +402,15 @@ public class Board
   public static void main(String[] args) {
     Board b = new Board();
 
-    // isOnInvalidGoal
-    expect(false, b.isOnInvalidGoal(1,0,BLACK));
-    expect(false, b.isOnInvalidGoal(6,0,BLACK));
-    expect(true, b.isOnInvalidGoal(0,1,BLACK));
-    expect(true, b.isOnInvalidGoal(7,4,BLACK));
-    expect(true, b.isOnInvalidGoal(1,0,WHITE));
-    expect(true, b.isOnInvalidGoal(6,0,WHITE));
-    expect(false, b.isOnInvalidGoal(0,1,WHITE));
-    expect(false, b.isOnInvalidGoal(7,4,WHITE));
+    // isOnValidGoal
+    expect(false, !b.isOnValidGoal(1,0,BLACK));
+    expect(false, !b.isOnValidGoal(6,0,BLACK));
+    expect(true, !b.isOnValidGoal(0,1,BLACK));
+    expect(true, !b.isOnValidGoal(7,4,BLACK));
+    expect(true, !b.isOnValidGoal(1,0,WHITE));
+    expect(true, !b.isOnValidGoal(6,0,WHITE));
+    expect(false, !b.isOnValidGoal(0,1,WHITE));
+    expect(false, !b.isOnValidGoal(7,4,WHITE));
 
     // isInCorner
     expect(true, b.isInCorner(0,0));
