@@ -17,4 +17,8 @@ public class Piece
     this.y = y;
     this.color = color;
   }
+
+  public String toString() {
+    return "[" + color + ": " + x + "," + y + "]";
+  }
 }

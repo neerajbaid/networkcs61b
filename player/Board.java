@@ -2,6 +2,7 @@ package player;
 
 import list.*;
 import dict.*;
+import java.util.Arrays;
 
 public class Board
 {
@@ -373,8 +374,23 @@ public class Board
     return 0;
   }
 
-
-  public static void main() {
-
+  // TEST
+  public String toString() {
+    String result = "";
+    for (int i = 0; i < LENGTH; i ++ ) {
+      for (Piece[] pieces : board) {
+        result += String.format("%1$-" + 10 + "s", pieces[i] + " ");
+      }
+      result += "\n";
+    }
+    return result;
+  }
+  private static void print(Board board) {
+    System.out.println(board);
+  }
+  public static void main(String[] args) {
+    Board board = new Board();
+    board.board[0][0] = new Piece(0,0,0);
+    print(board);
   }
 }
