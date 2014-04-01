@@ -215,15 +215,16 @@ public class Board
 
   public Piece findNextPieceInDirection(Piece piece, int direction)
   {
-    int[] coordinate = {piece.x, piece.y};
-    while (pieceAtCoordinate(coordinate) == null)
+    int[] coordinate = incrementCoordinateInDirection(new int[] {piece.x, piece.y}, direction);
+    while (containsCoordinate(coordinate))
     {
-      if (!containsCoordinate(coordinate))
-        return null;
-      else
-        coordinate = incrementCoordinateInDirection(coordinate, direction);
+      Piece next = pieceAtCoordinate(coordinate);
+      if (next != null) {
+        return next;
+      }
+      coordinate = incrementCoordinateInDirection(coordinate, direction);
     }
-    return pieceAtCoordinate(coordinate);
+    return null;
   }
 
   public int[] incrementCoordinateInDirection(int[] coordinate, int direction)
@@ -258,8 +259,6 @@ public class Board
       x--;
       y--;
     }
-    else
-      System.out.println("direction error");
     coordinate[0] = x;
     coordinate[1] = y;
     return coordinate;
@@ -484,10 +483,28 @@ public class Board
     b.performValidMove(m, BLACK);
     expect(1,b.beginningZonePieces(BLACK).length());
 
+    //increment direction
+    int[] c;
+    c = b.incrementCoordinateInDirection(new int[]{0,0},DIRECTION_UP_LEFT);
+    expect("[-1, -1]",Arrays.toString(c));
+
+    //findNextPieceInDirection
+    Piece p = b.pieceAtCoordinate(new int[] {1,5});
+    Piece p1 = b.findNextPieceInDirection(p,DIRECTION_RIGHT);
+    expect(null, p1);
+    m = new Move(4,2);
+    b.performValidMove(m, BLACK);
+    p1 = b.findNextPieceInDirection(p, DIRECTION_UP_RIGHT);
+    expect("[1:4,2]", p1);
+
+    
+
     //Find Network:
     m = new Move(4,3);
     b.performValidMove(m, WHITE);
     m = new Move(2,3);
     b.performValidMove(m, WHITE);
+
+
   }
 }
