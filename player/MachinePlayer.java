@@ -78,7 +78,7 @@ public class MachinePlayer extends Player {
     for (Move move : validMoves) {
       board.performValidMove(move, color);
       replyBest = chooseMove(!color, alpha, beta, depth+1);
-      board.undoMove(move);
+      board.undoMove(move, color);
       if (side == WHITE_COLOR && replyBestScore > myBestScore) {
         myBest = move;
         myBestScore = replyBestScore;

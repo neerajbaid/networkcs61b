@@ -24,81 +24,92 @@ public class Board
   
   private static final int WHITE_WIN = 0, BLACK_WIN = 1;
 
-  private static final int BOARD_LENGTH = 8;
+  public static final int LENGTH = 8;
+  public static final int END_INDEX = 7;
 
   public Board() {
-    board = new Piece[BOARD_LENGTH][BOARD_LENGTH];
-  }
-
-  
-  public int evaluate(int playerIn) {
-    int player = playerIn;
-    
-    DList networks = this.findAllNetworks(player);
-    boolean reachesGoal = false;
-    ListNode current = networks.front();
-    while(current != null) {
-      Network network = (Network) current.item();
-      
-      DList pieces = network.getPieces();
-      Piece front = (Piece) pieces.front().item();
-      Piece back = (Piece) pieces.back().item();
-      
-      if(this.isOnGoal(front) && this.isOnGoal(back)) {
-        return 1;
-      }
-      
-      current = current.next();
-    }
-
-    //switch players
-    player = 1 - player;
-    networks = this.findAllNetworks(player);
-    reachesGoal = false;
-    current = networks.front();
-    while(current != null){
-      Network network = (Network) current.item();
-      
-      DList pieces = network.getPieces();   
-      Piece front = (Piece) pieces.front().item();
-      Piece back = (Piece) pieces.back().item();
-
-      if(this.isOnGoal(front) && this.isOnGoal(back)){
-        return -1;
-      }
-      
-      current = current.next();
-    }
-    
-    return 0;
+    board = new Piece[LENGTH][LENGTH];
   }
   
+
+  // CHECKING VALID MOVE
+
   private boolean isOnGoal(Piece piece) {
     return piece.coordinate[0] == 0 && piece.coordinate[1] != 0 || piece.coordinate[1] == 0 && piece.coordinate[0] != 0;   
   }
 
-  public boolean isValidMove(Move move){
-    int difference = move.x1 - move.y1;
-    boolean notInCorner = difference != 0 && difference != BOARD_LENGTH;
-    boolean pieceThere = this.board[move.x1][move.y1] != null;
-    
+  public boolean isOnInvalidGoal(int x, int y, int color) {
+    if (color == WHITE_COLOR) {
+      return y == 0 || y == END_INDEX;
+    }
+    else {
+      return x == 0 || x == END_INDEX;
+    }
+  }
+
+  public boolean isInCorner(int x, int y) {
+    if (x == 0 || y == 0 || x == END_INDEX || y == END_INDEX) {
+      int difference = Math.abs(x-y);
+      return (difference == 0 || difference == END_INDEX);
+    }
+    return false;
+  }
+
+  public boolean hasNeighbor(int[] coordinate, int color) {
+    int x = coordinate[0];
+    int y = coordinate[1];
+    for (int i = -1; i < 2; i++) {
+      for (int j = -1; j < 2; j++) {
+        try{
+          Piece piece = board[x + i][y + j];
+          if (piece == null || (i == 0 && j == 0 )) {
+            continue;
+          }
+          if (piece.color == color) {
+            return true;
+          }
+        } catch(Exception e){}
+      }
+    }
+    return false;
+  }
+
+  public boolean isInCluster(int x, int y, int color) {
     //count how many pieces in vacinity
     int counter = 0;
     for (int i = -1; i < 2; i++) {
       for (int j = -1; j < 2; j++) {
         try{
-          counter += board[move.x1 + i][move.y1 + j] != null ? 1 : 0;
+          Piece piece = board[x + i][y + j];
+          if (piece == null || (i == 0 && j == 0 )) {
+            continue;
+          }
+          if (piece.color == color) {
+            counter += 1 + piece.neighbors;
+          }
         } catch(Exception e){}
       }
     }
-    
-    boolean clusterAround = counter > 2;
-    
-    //check if placed in opposite color's goal
-    
-    return notInCorner && !pieceThere && !clusterAround;
-    
+    return counter > 2;
   }
+
+  public boolean isValidMove(Move move, int color){
+    int x = move.x1;
+    int y = move.y1;
+    if (isInCorner(x,y)) {
+      return false;
+    }
+    // piece already there:
+    if (board[x][y] != null) {
+      return false;
+    }
+    if (isOnInvalidGoal(x,y,color)) {
+      return false;
+    }
+    return isInCluster(move.x1, move.y1, color);
+  }
+
+  // MANIPULATING BOARD
 
   // Must be a valid move. If not valid, will break
   public void performValidMove(Move move, int color) {
@@ -114,14 +125,19 @@ public class Board
       piece = new Piece(color, move.x1, move.y1);
     }
     board[move.x1][move.y1] = piece;
+    piece.coordinate = new int[] {move.x1, move.y1};
+    piece.neighbors = (hasNeighbor(piece.coordinate, color) ? 1 : 0);
   }
 
-  public void undoMove(Move move) {
+  public void undoMove(Move move, int color) {
     if (move.moveKind == move.QUIT) {
       return;
     }
     if (move.moveKind == move.STEP) {
-      board[move.x2][move.y2] = board[move.x1][move.y1];
+      Piece piece = board[move.x1][move.y1];
+      board[move.x2][move.y2] = piece;
+      piece.coordinate = new int[] {move.x2, move.y2};
+      piece.neighbors = hasNeighbor(piece.coordinate, color) ? 1 : 0;
     }
     board[move.x1][move.y1] = null;
   }
@@ -149,7 +165,7 @@ public class Board
   public Network findNetwork(Piece piece, Network currentNetwork, int prevDirection)
   {
     // DList endZonePieces = endZonePieces(color);
-    if (pieceIsInEndZone(piece))
+    if (pieceIsInTargetEndZone(piece, currentNetwork))
       return currentNetwork;
     for (int direction : DIRECTIONS)
     {
@@ -171,6 +187,22 @@ public class Board
       }
     }
     return null;
+  }
+
+  public boolean pieceIsInTargetEndZone(Piece piece, Network network) {
+    int x = piece.coordinate[0];
+    int y = piece.coordinate[1];
+    int color = network.color;
+    if (isOnInvalidGoal(x,y,color)) {
+      return false;
+    }
+    int startX = network.first().coordinate[0];
+    int startY = network.first().coordinate[1];
+    if (color == WHITE_COLOR) {
+      return startX != piece.coordinate[0];
+    }
+    // black:
+    return startY != piece.coordinate[1];
   }
 
   public Piece findNextPieceInDirection(Piece piece, int direction)
@@ -225,8 +257,8 @@ public class Board
 
   public boolean containsCoordinate(int[] coordinate)
   {
-    return (coordinate[0] < BOARD_LENGTH && coordinate[0] > 0
-            && coordinate[1] < BOARD_LENGTH && coordinate[1] > 0);
+    return (coordinate[0] < LENGTH && coordinate[0] > 0
+            && coordinate[1] < LENGTH && coordinate[1] > 0);
   }
 
   public Piece pieceAtCoordinate(int[] coordinate)
@@ -259,6 +291,7 @@ public class Board
     }
     else
       System.out.println("color error");
+    return null;
   }
 
   public DList endZonePieces(int color)
@@ -287,9 +320,48 @@ public class Board
     else {
       System.out.println("color error");
     }
+    return null;
   }
 
-  public boolean pieceIsInEndZone(int color) {
+  public int evaluate(int playerIn) {
+    int player = playerIn;
     
+    DList networks = this.findAllNetworks(player);
+    boolean reachesGoal = false;
+    ListNode current = networks.front();
+    while(current != null) {
+      Network network = (Network) current.item();
+      
+      DList pieces = network.getPieces();
+      Piece front = (Piece) pieces.front().item();
+      Piece back = (Piece) pieces.back().item();
+      
+      if(this.isOnGoal(front) && this.isOnGoal(back)) {
+        return 1;
+      }
+      
+      current = current.next();
+    }
+
+    //switch players
+    player = 1 - player;
+    networks = this.findAllNetworks(player);
+    reachesGoal = false;
+    current = networks.front();
+    while(current != null){
+      Network network = (Network) current.item();
+      
+      DList pieces = network.getPieces();   
+      Piece front = (Piece) pieces.front().item();
+      Piece back = (Piece) pieces.back().item();
+
+      if(this.isOnGoal(front) && this.isOnGoal(back)){
+        return -1;
+      }
+      
+      current = current.next();
+    }
+    
+    return 0;
   }
 }
