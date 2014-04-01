@@ -30,4 +30,8 @@ public class Network
     copy.pieces = pieces.copy();
     return copy;
   }
+
+  public Piece first() {
+    return (Piece) pieces.front().item();
+  }
 }
