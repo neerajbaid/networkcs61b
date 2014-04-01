@@ -11,18 +11,21 @@ public class ListIterator implements Iterator<ListNode> {
   }
 
   public boolean hasNext() {
-    return current.next().isValidNode();
+    return current.isValidNode() && current.next().isValidNode();
   }
 
   public ListNode next() {
-    if (!hasNext()) {
-      throw new NoSuchElementException();
+    if (!hasNext() || !current.isValidNode()) {
+      return null;
     }
     current = current.next();
     return current;
   }
 
   public void remove() {
+    if (!current.isValidNode()) {
+      return;
+    }
     current.remove();
   }
 }

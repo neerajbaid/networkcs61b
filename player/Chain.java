@@ -34,6 +34,10 @@ public class Chain
   }
 
   public Piece first() {
-    return (Piece) pieces.front().item();
+    ListNode node = pieces.front();
+    if (node.isValidNode()) {
+      return (Piece) node.item();
+    }
+    return null;
   }
 }
