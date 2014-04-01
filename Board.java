@@ -31,15 +31,15 @@ public class Board
   public int evaluate(int playerIn) {
     int player = playerIn;
     
-    SList networks = this.findAllNetworks(player);
+    DList networks = this.findAllNetworks(player);
     boolean reachesGoal = false;
-    SListNode current = networks.front();
+    ListNode current = networks.front();
     while(current != null) {
-      Network network = current.item();
+      Network network = (Network) current.item();
       
-      SList pieces = network.getPieces();
-      Piece front = pieces.front();
-      Piece back = pieces.back();
+      DList pieces = network.getPieces();
+      Piece front = (Piece) pieces.front().item();
+      Piece back = (Piece) pieces.back().item();
       
       if(this.isOnGoal(front) && this.isOnGoal(back)) {
         return 1;
@@ -50,13 +50,13 @@ public class Board
 
     //switch players
     player = 1 - player;
-    SList networks = this.findAllNetworks(player);
+    DList networks = this.findAllNetworks(player);
     boolean reachesGoal = false;
-    SListNode current = networks.front();
+    ListNode current = networks.front();
     while(current != null){
-      Network network = current.item();
+      Network network = (Network) current.item();
       
-      SList pieces = network.getPieces();   
+      DList pieces = network.getPieces();   
       Piece front = pieces.front();
       Piece back = pieces.back();
       
@@ -134,10 +134,10 @@ public class Board
 
   // # pragma mark - Network Finding #iOSProgrammers #ye
 
-  public SList findAllNetworks(int color)
+  public DList findAllNetworks(int color)
   {
-    SList beginningZonePieces = beginningZonePieces(color);
-    SList networks = new SList();
+    DList beginningZonePieces = beginningZonePieces(color);
+    DList networks = new DList();
     for (Piece piece : beginningZonePieces)
     {
       Network network = findNetwork(piece, new Network());
@@ -152,7 +152,7 @@ public class Board
 
   public Network findNetwork(Piece piece, Network currentNetwork)
   {
-    SList endZonePieces = endZonePieces(color);
+    DList endZonePieces = endZonePieces(color);
     if (pieceIsInEndZone(piece))
       return currentNetwork;
     for (int direction : DIRECTIONS)
@@ -233,9 +233,9 @@ public class Board
     return board[coordinate[0]][coordinate[1]];
   }
 
-  public SList beginningZonePieces(int color)
+  public DList beginningZonePieces(int color)
   {
-    SList pieces = new SList();
+    DList pieces = new DList();
     if (color == WHITE_COLOR)
     {
       for (int i = 1; i < board[0].length-1; i++)
@@ -260,9 +260,9 @@ public class Board
       System.out.println("color error");
   }
 
-  public SList endZonePieces(int color)
+  public DList endZonePieces(int color)
   {
-    SList pieces = new SList();
+    DList pieces = new DList();
     if (color == WHITE_COLOR)
     {
       for (int i = 1; i < board[0].length-1; i++)

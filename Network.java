@@ -4,7 +4,7 @@ import dict.*;
 public class Network
 {
   private int color;
-  private SList pieces;
+  private DList pieces;
 
   public boolean contains(Piece piece)   
   {
@@ -16,7 +16,7 @@ public class Network
     pieces.insertBack(piece);
   }
   
-  public SList getPieces(){
+  public DList getPieces(){
 	  return this.pieces;
   }
 }

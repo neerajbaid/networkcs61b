@@ -31,7 +31,7 @@ public class MachinePlayer extends Player {
   }
   
   public Moves[] validMoves(Board board){
-    SList moves = new SList();
+    DList moves = new DList();
     
     for(int i = 0; i < board.getWidth(); i++){
       for(int j = 0; j < board.getHeight(); j++){   
@@ -43,7 +43,7 @@ public class MachinePlayer extends Player {
     }
     
     Moves[] arr = new Moves[moves.length()];   
-    SListNode current = moves.front();
+    ListNode current = moves.front();
     for(int i = 0; i < arr.length; i++){
       arr[i] = current.item();
       current = current.next();
