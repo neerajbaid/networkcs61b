@@ -9,6 +9,11 @@ public class Piece
   public static final int WHITE_COLOR = 0;
   public static final int BLACK_COLOR = 1;
 
+  public Piece(int color, int x, int y) {
+    this.color = color;
+    coordinate = {x, y};
+  }
+
   public int getColor()
   {
     return color;
