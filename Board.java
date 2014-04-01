@@ -26,85 +26,86 @@ public class Board
     board = new Piece[8][8];
   }
 
-  // # pragma mark - Network Finding #iOSProgrammers #ye
   
   public int evaluate(int playerIn){
-	  int player = playerIn;
-	  
-	  SList networks = this.findAllNetworks(player);
-	  boolean reachesGoal = false;
-	  SListNode current = networks.front();
-	  while(current != null){
-		  Network network = current.item();
-		  
-		  SList pieces = network.getPieces();   
-		  Piece front = pieces.front();
-		  Piece back = pieces.back();
-		  
-		  if(this.isOnGoal(front) && this.isOnGoal(back)){   
-			  return 1;
-		  }
-		  
-		  current = current.next();
-	  }
-	  
-	  //switch players
-	  player = 1 - player;
-	  SList networks = this.findAllNetworks(player);
-	  boolean reachesGoal = false;
-	  SListNode current = networks.front();
-	  while(current != null){
-		  Network network = current.item();
-		  
-		  SList pieces = network.getPieces();   
-		  Piece front = pieces.front();
-		  Piece back = pieces.back();
-		  
-		  if(this.isOnGoal(front) && this.isOnGoal(back)){
-			  return -1;
-		  }
-		  
-		  current = current.next();
-	  }
-	  
-	  return 0;
+    int player = playerIn;
+    
+    SList networks = this.findAllNetworks(player);
+    boolean reachesGoal = false;
+    SListNode current = networks.front();
+    while(current != null){
+      Network network = current.item();
+      
+      SList pieces = network.getPieces();   
+      Piece front = pieces.front();
+      Piece back = pieces.back();
+      
+      if(this.isOnGoal(front) && this.isOnGoal(back)){   
+        return 1;
+      }
+      
+      current = current.next();
+    }
+    
+    //switch players
+    player = 1 - player;
+    SList networks = this.findAllNetworks(player);
+    boolean reachesGoal = false;
+    SListNode current = networks.front();
+    while(current != null){
+      Network network = current.item();
+      
+      SList pieces = network.getPieces();   
+      Piece front = pieces.front();
+      Piece back = pieces.back();
+      
+      if(this.isOnGoal(front) && this.isOnGoal(back)){
+        return -1;
+      }
+      
+      current = current.next();
+    }
+    
+    return 0;
   }
   
   private boolean isOnGoal(Piece piece){
-	  return piece.coordinate[0] == 0 && piece.coordinate[1] != 0 || piece.coordinate[1] == 0 && piece.coordinate[0] != 0;   
+    return piece.coordinate[0] == 0 && piece.coordinate[1] != 0 || piece.coordinate[1] == 0 && piece.coordinate[0] != 0;   
   }
   
   public int getHeight(){
-	  return this.board[0].length;
+    return this.board[0].length;
   }
   
   public int getWidth(){
-	  return this.board.length;
+    return this.board.length;
   }
   
   public boolean isValidMove(Move move){
-	  int difference = move.x1 - move.y1;
-	  boolean notInCorner = difference != 0 && difference != this.board.length;   
-	  boolean pieceThere = this.board[move.x1][move.y1] != null;
-	  
-	  //count how many pieces in vacinity
-	  int counter = 0;
-	  for (int i = -1; i < 2; i++) {
-		  for (int j = -1; j < 2; j++) {
-			  try{
-				  counter += (int)(this.board[move.x1 + i][move.y1 + j] != null);   
-			  } catch(Exception e){}
-		  }
-	  }
-	  
-	  boolean clusterAround = counter > 2;
-	  
-	  //check if placed in opposite color's goal
-	  
-	  return notInCorner && !pieceThere && !clusterAround;
-		
-	}
+    int difference = move.x1 - move.y1;
+    boolean notInCorner = difference != 0 && difference != this.board.length;   
+    boolean pieceThere = this.board[move.x1][move.y1] != null;
+    
+    //count how many pieces in vacinity
+    int counter = 0;
+    for (int i = -1; i < 2; i++) {
+      for (int j = -1; j < 2; j++) {
+        try{
+          counter += (int)(this.board[move.x1 + i][move.y1 + j] != null);   
+        } catch(Exception e){}
+      }
+    }
+    
+    boolean clusterAround = counter > 2;
+    
+    //check if placed in opposite color's goal
+    
+    return notInCorner && !pieceThere && !clusterAround;
+    
+  }
   
+
+  // # pragma mark - Network Finding #iOSProgrammers #ye
 
   public SList findAllNetworks(int color)
   {

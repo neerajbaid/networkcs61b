@@ -31,25 +31,25 @@ public class MachinePlayer extends Player {
   }
   
   public Moves[] validMoves(Board board){
-	  SList moves = new SList();
-	  
-	  for(int i = 0; i < board.getWidth(); i++){
-		  for(int j = 0; j < board.getHeight(); j++){   
-			  Move move = new Move(i, j);
-			  if(board.isValidMove(move)){
-				  moves.push(move);
-			  }
-		  }
-	  }
-	  
-	  Moves[] arr = new Moves[moves.length()];   
-	  SListNode current = moves.front();
-	  for(int i = 0; i < arr.length; i++){
-		  arr[i] = current.item();
-		  current = current.next();
-	  }
-	  
-	  return arr;
+    SList moves = new SList();
+    
+    for(int i = 0; i < board.getWidth(); i++){
+      for(int j = 0; j < board.getHeight(); j++){   
+        Move move = new Move(i, j);
+        if(board.isValidMove(move)){
+          moves.push(move);
+        }
+      }
+    }
+    
+    Moves[] arr = new Moves[moves.length()];   
+    SListNode current = moves.front();
+    for(int i = 0; i < arr.length; i++){
+      arr[i] = current.item();
+      current = current.next();
+    }
+    
+    return arr;
   }
 
   // Returns a new move by "this" player.  Internally records the move (updates
