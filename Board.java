@@ -23,8 +23,10 @@ public class Board
   
   private static final int WHITE_WIN = 0, BLACK_WIN = 1;
 
+  private static final int BOARD_LENGTH = 8;
+
   public Board() {
-    board = new Piece[8][8];
+    board = new Piece[BOARD_LENGTH][BOARD_LENGTH];
   }
 
   
@@ -50,16 +52,16 @@ public class Board
 
     //switch players
     player = 1 - player;
-    DList networks = this.findAllNetworks(player);
-    boolean reachesGoal = false;
-    ListNode current = networks.front();
+    networks = this.findAllNetworks(player);
+    reachesGoal = false;
+    current = networks.front();
     while(current != null){
       Network network = (Network) current.item();
       
       DList pieces = network.getPieces();   
-      Piece front = pieces.front();
-      Piece back = pieces.back();
-      
+      Piece front = (Piece) pieces.front().item();
+      Piece back = (Piece) pieces.back().item();
+
       if(this.isOnGoal(front) && this.isOnGoal(back)){
         return -1;
       }
@@ -73,18 +75,10 @@ public class Board
   private boolean isOnGoal(Piece piece) {
     return piece.coordinate[0] == 0 && piece.coordinate[1] != 0 || piece.coordinate[1] == 0 && piece.coordinate[0] != 0;   
   }
-  
-  public int getHeight(){
-    return this.board[0].length;
-  }
-  
-  public int getWidth(){
-    return this.board.length;
-  }
 
   public boolean isValidMove(Move move){
     int difference = move.x1 - move.y1;
-    boolean notInCorner = difference != 0 && difference != this.board.length;
+    boolean notInCorner = difference != 0 && difference != BOARD_LENGTH;
     boolean pieceThere = this.board[move.x1][move.y1] != null;
     
     //count how many pieces in vacinity
@@ -92,7 +86,7 @@ public class Board
     for (int i = -1; i < 2; i++) {
       for (int j = -1; j < 2; j++) {
         try{
-          counter += (int)(this.board[move.x1 + i][move.y1 + j] != null);
+          counter += board[move.x1 + i][move.y1 + j] != null ? 1 : 0;
         } catch(Exception e){}
       }
     }
@@ -107,11 +101,11 @@ public class Board
 
   // Must be a valid move. If not valid, will break
   public void performValidMove(Move move, int color) {
-    if (move.moveKind = move.QUIT) {
+    if (move.moveKind == move.QUIT) {
       return;
     }
     Piece piece;
-    if (move.moveKind = move.STEP) {
+    if (move.moveKind == move.STEP) {
       piece = board[move.x2][move.y2];
       board[move.x2][move.y2] = null;
     }
@@ -122,10 +116,10 @@ public class Board
   }
 
   public void undoMove(Move move) {
-    if (move.moveKind = move.QUIT) {
+    if (move.moveKind == move.QUIT) {
       return;
     }
-    if (move.moveKind = move.STEP) {
+    if (move.moveKind == move.STEP) {
       board[move.x2][move.y2] = board[move.x1][move.y1];
     }
     board[move.x1][move.y1] = null;
@@ -138,19 +132,20 @@ public class Board
   {
     DList beginningZonePieces = beginningZonePieces(color);
     DList networks = new DList();
-    for (Piece piece : beginningZonePieces)
+    for (ListNode pieceNode : beginningZonePieces)
     {
-      Network network = findNetwork(piece, new Network());
+      Piece piece = (Piece) pieceNode.item();
+      Network network = findNetwork(piece, new Network(), color);
       if (network != null)
         networks.insertFront(network);
     }
-    if (networks.size() == 0)
+    if (networks.length() == 0)
       return null;
     else
       return networks;
   }
 
-  public Network findNetwork(Piece piece, Network currentNetwork)
+  public Network findNetwork(Piece piece, Network currentNetwork, int color)
   {
     DList endZonePieces = endZonePieces(color);
     if (pieceIsInEndZone(piece))
@@ -224,8 +219,8 @@ public class Board
 
   public boolean containsCoordinate(int[] coordinate)
   {
-    return (coordinate[0] < board.length() && coordinate[0] > 0
-            && coordinate[1] < board.length() && coordinate[1] > 0);
+    return (coordinate[0] < BOARD_LENGTH && coordinate[0] > 0
+            && coordinate[1] < BOARD_LENGTH && coordinate[1] > 0);
   }
 
   public Piece pieceAtCoordinate(int[] coordinate)
