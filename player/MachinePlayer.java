@@ -56,31 +56,6 @@ public class MachinePlayer extends Player {
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
     return chooseMove(color, color, !color, 1);
-  } 
-
-  // If the Move m is legal, records the move as a move by the opponent
-  // (updates the internal game board) and returns true.  If the move is
-  // illegal, returns false without modifying the internal state of "this"
-  // player.  This method allows your opponents to inform you of their moves.
-  public boolean opponentMove(Move m) {
-    if (!board.isValidMove(m)) {
-      return false;
-    }
-    board.performValidMove(m, !color);
-    return true;
-  }
-
-  // If the Move m is legal, records the move as a move by "this" player
-  // (updates the internal game board) and returns true.  If the move is
-  // illegal, returns false without modifying the internal state of "this"
-  // player.  This method is used to help set up "Network problems" for your
-  // player to solve.
-  public boolean forceMove(Move m) {
-    if (!board.isValidMove(m)) {
-      return false;
-    }
-    board.performValidMove(m, color);
-    return true;
   }
 
   public Move chooseMove(int color, int alpha, int beta, int depth) {
@@ -118,6 +93,31 @@ public class MachinePlayer extends Player {
       }
     }
     return myBest;
+  }
+
+  // If the Move m is legal, records the move as a move by the opponent
+  // (updates the internal game board) and returns true.  If the move is
+  // illegal, returns false without modifying the internal state of "this"
+  // player.  This method allows your opponents to inform you of their moves.
+  public boolean opponentMove(Move m) {
+    if (!board.isValidMove(m)) {
+      return false;
+    }
+    board.performValidMove(m, !color);
+    return true;
+  }
+
+  // If the Move m is legal, records the move as a move by "this" player
+  // (updates the internal game board) and returns true.  If the move is
+  // illegal, returns false without modifying the internal state of "this"
+  // player.  This method is used to help set up "Network problems" for your
+  // player to solve.
+  public boolean forceMove(Move m) {
+    if (!board.isValidMove(m)) {
+      return false;
+    }
+    board.performValidMove(m, color);
+    return true;
   }
 
 }
