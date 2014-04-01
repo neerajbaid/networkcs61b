@@ -169,7 +169,7 @@ public class Board
     Chain beginning = new Chain(color);
     beginning.addPiece(piece);
     System.out.println("starting chain: " + beginning.toString());
-    Chain network = findNetwork(piece, beginning);
+    Chain network = findNetwork(piece, beginning, DIRECTION_NONE);
     if (network == null)
       System.out.println("returned completed network, network is null");
     else
@@ -184,7 +184,7 @@ public class Board
       beginning = new Chain(color);
       beginning.addPiece(piece);
       System.out.println("starting chain: " + beginning.toString());
-      network = findNetwork(piece, beginning);
+      network = findNetwork(piece, beginning, DIRECTION_NONE);
       if (network == null)
         System.out.println("returned completed network, network is null");
       else
@@ -195,7 +195,7 @@ public class Board
     return networks;
   }
 
-  public Chain findNetwork(Piece piece, Chain currentNetwork)
+  public Chain findNetwork(Piece piece, Chain currentNetwork, int prevDirection)
   {
     if (pieceIsInTargetEndZone(piece, currentNetwork))
     {
@@ -209,6 +209,8 @@ public class Board
     for (int direction : DIRECTIONS)
     {
       Piece nextPiece = findNextPieceInDirection(piece, direction);
+      if (direction == prevDirection)
+        continue;
       if (nextPiece == null)
       {
         System.out.println("next piece is null");
@@ -231,7 +233,7 @@ public class Board
         System.out.println("next piece: " + nextPiece.toString());
         next.addPiece(nextPiece);
         System.out.println("current network after adding: " + next.toString());
-        findNetwork(nextPiece, next);
+        findNetwork(nextPiece, next, direction);
       }
     }
     System.out.println("return null");
@@ -565,7 +567,7 @@ public class Board
     print(b);
     b.findAllNetworks(WHITE);
     System.out.println("all networks: " + current_networks.toString());
-    // expect(3, b.findAllNetworks(WHITE).length());
-    expect(3, b.current_networks.length());
+    // expect(0, b.findAllNetworks(WHITE).length());
+    expect(0, b.current_networks.length());
   }
 }
