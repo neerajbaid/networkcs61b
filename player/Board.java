@@ -35,6 +35,9 @@ public class Board
   
 
   // CHECKING VALID MOVE
+  protected static int flipColor(int color) {
+    return Math.abs(color - 1);
+  }
 
   public boolean isOnValidGoal(int x, int y, int color) {
     if (isInCorner(x,y)) {
@@ -46,6 +49,10 @@ public class Board
     else {
       return y == 0 || y == END_INDEX;
     }
+  }
+
+  public boolean isOnInvalidGoal(int x, int y, int color) {
+    return isOnValidGoal(x,y,flipColor(color));
   }
 
   public boolean isInCorner(int x, int y) {
@@ -105,7 +112,7 @@ public class Board
     if (board[x][y] != null) {
       return false;
     }
-    if (!isOnValidGoal(x,y,color)) {
+    if (isOnInvalidGoal(x,y,color)) {
       return false;
     }
     return !isInCluster(move.x1, move.y1, color);
@@ -403,6 +410,7 @@ public class Board
     Board b = new Board();
 
     // isOnValidGoal
+    print("isOnValidGoal");
     expect(false, !b.isOnValidGoal(1,0,BLACK));
     expect(false, !b.isOnValidGoal(6,0,BLACK));
     expect(true, !b.isOnValidGoal(0,1,BLACK));
@@ -413,6 +421,7 @@ public class Board
     expect(false, !b.isOnValidGoal(7,4,WHITE));
 
     // isInCorner
+    print("Corner");
     expect(true, b.isInCorner(0,0));
     expect(true, b.isInCorner(7,0));
     expect(true, b.isInCorner(7,7));
@@ -421,6 +430,7 @@ public class Board
     expect(false, b.isInCorner(0,1));
 
     // performValidMove and undoMove
+    print("Perform and undo");
     Move m = new Move(1,5);
     b.performValidMove(m, BLACK);
     print(b);
@@ -439,6 +449,7 @@ public class Board
     print(b);
 
     // isInCluster
+    print("inCluster");
     b.performValidMove(m, WHITE);
     m = new Move(6,3);
     b.performValidMove(m, WHITE);
@@ -449,6 +460,7 @@ public class Board
     expect(true, b.isInCluster(7,2,WHITE));
 
     // isValidMove
+    print("isValidMove");
     m = new Move(7,4);
     expect(false, b.isValidMove(m, WHITE));
     expect(false, b.isValidMove(m, BLACK));

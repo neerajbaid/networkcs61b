@@ -57,7 +57,7 @@ public class MachinePlayer extends Player {
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
-    return chooseMove(color, color, flipColor(color), 1);
+    return chooseMove(color, color, Board.flipColor(color), 1);
   }
 
   public Move chooseMove(int side, int alpha, int beta, int depth) {
@@ -96,7 +96,7 @@ public class MachinePlayer extends Player {
     myBest = validMoves[0];
     for (Move move : validMoves) {
       board.performValidMove(move, side);
-      replyBest = chooseMove(flipColor(side), alpha, beta, depth+1);
+      replyBest = chooseMove(Board.flipColor(side), alpha, beta, depth+1);
       board.undoMove(move);
       if (side == WHITE_COLOR && replyBestScore > myBestScore) {
         myBest = move;
@@ -119,10 +119,10 @@ public class MachinePlayer extends Player {
   // illegal, returns false without modifying the internal state of "this"
   // player.  This method allows your opponents to inform you of their moves.
   public boolean opponentMove(Move m) {
-    if (!board.isValidMove(m, flipColor(color))) {
+    if (!board.isValidMove(m, Board.flipColor(color))) {
       return false;
     }
-    board.performValidMove(m, flipColor(color));
+    board.performValidMove(m, Board.flipColor(color));
     return true;
   }
 
@@ -137,10 +137,6 @@ public class MachinePlayer extends Player {
     }
     board.performValidMove(m, color);
     return true;
-  }
-
-  private int flipColor(int color) {
-    return Math.abs(color - 1);
   }
 
 }
