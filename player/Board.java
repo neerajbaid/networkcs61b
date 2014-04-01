@@ -8,8 +8,8 @@ public class Board
 {
   private Piece[][] board;
 
-  public static final int WHITE_COLOR = 0;
-  public static final int BLACK_COLOR = 1;
+  public static final int WHITE = 0;
+  public static final int BLACK = 1;
 
   public static final int DIRECTION_NONE = -1;
   public static final int DIRECTION_UP = 0;
@@ -41,7 +41,7 @@ public class Board
   }
 
   public boolean isOnInvalidGoal(int x, int y, int color) {
-    if (color == WHITE_COLOR) {
+    if (color == WHITE) {
       return y == 0 || y == END_INDEX;
     }
     else {
@@ -199,7 +199,7 @@ public class Board
     }
     int startX = network.first().x;
     int startY = network.first().y;
-    if (color == WHITE_COLOR) {
+    if (color == WHITE) {
       return startX != piece.x;
     }
     // black:
@@ -278,7 +278,7 @@ public class Board
   public DList beginningZonePieces(int color)
   {
     DList pieces = new DList();
-    if (color == WHITE_COLOR)
+    if (color == WHITE)
     {
       for (int i = 1; i < board[0].length-1; i++)
       {
@@ -288,7 +288,7 @@ public class Board
           pieces.insertBack(piece);
       }
     }
-    else if (color == BLACK_COLOR)
+    else if (color == BLACK)
     {
       for (int i = 1; i < board[0].length-1; i++)
       {
@@ -306,7 +306,7 @@ public class Board
   public DList endZonePieces(int color)
   {
     DList pieces = new DList();
-    if (color == WHITE_COLOR)
+    if (color == WHITE)
     {
       for (int i = 1; i < board[0].length-1; i++)
       {
@@ -316,7 +316,7 @@ public class Board
           pieces.insertBack(piece);
       }
     }
-    else if (color == BLACK_COLOR)
+    else if (color == BLACK)
     {
       for (int i = 1; i < board[0].length-1; i++)
       {
@@ -377,20 +377,57 @@ public class Board
   // TEST
   public String toString() {
     String result = "";
-    for (int i = 0; i < LENGTH; i ++ ) {
+    for (int y = 0; y < LENGTH; y ++ ) {
+      int x = 0;
       for (Piece[] pieces : board) {
-        result += String.format("%1$-" + 10 + "s", pieces[i] + " ");
+        Piece piece = pieces[y];
+        if (piece == null) {
+          result += String.format("%1$-" + 8 + "s","(" + x + "" + y + ")");
+        }
+        else {
+          result += String.format("%1$-" + 8 + "s", pieces[y] + " ");
+        }
+        x++;
       }
       result += "\n";
     }
     return result;
   }
-  private static void print(Board board) {
-    System.out.println(board);
+  private static void expect(Object expect, Object o) {
+    System.out.println("Expect " + expect + ": " + o);
+  }
+  private static void print(Object o) {
+    System.out.println(o);
   }
   public static void main(String[] args) {
-    Board board = new Board();
-    board.board[0][0] = new Piece(0,0,0);
-    print(board);
+    Board b = new Board();
+
+    // isOnInvalidGoal
+    expect(false, b.isOnInvalidGoal(1,0,BLACK));
+    expect(false, b.isOnInvalidGoal(6,0,BLACK));
+    expect(true, b.isOnInvalidGoal(0,1,BLACK));
+    expect(true, b.isOnInvalidGoal(7,4,BLACK));
+    expect(true, b.isOnInvalidGoal(1,0,WHITE));
+    expect(true, b.isOnInvalidGoal(6,0,WHITE));
+    expect(false, b.isOnInvalidGoal(0,1,WHITE));
+    expect(false, b.isOnInvalidGoal(7,4,WHITE));
+
+    // isInCorner
+    expect(true, b.isInCorner(0,0));
+    expect(true, b.isInCorner(7,0));
+    expect(true, b.isInCorner(7,7));
+    expect(false, b.isInCorner(7,4));
+    expect(false, b.isInCorner(5,5));
+    expect(false, b.isInCorner(0,1));
+
+    // performValidMove
+    Move m = new Move(1,5);
+    b.performValidMove(m, BLACK);
+    print(b);
+    
+    m = new Move(3,6,1,5);
+    b.performValidMove(m, BLACK);
+    print(b);
+
   }
 }

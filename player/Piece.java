@@ -19,6 +19,6 @@ public class Piece
   }
 
   public String toString() {
-    return "[" + color + ": " + x + "," + y + "]";
+    return "[" + color + ":" + x + "," + y + "]";
   }
 }
