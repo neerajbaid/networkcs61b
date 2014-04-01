@@ -117,7 +117,17 @@ public class Board
     else {
       piece = new Piece(color, move.x1, move.y1);
     }
-    board[move.x1,move.y1] = piece;
+    board[move.x1][move.y1] = piece;
+  }
+
+  public void undoMove(Move move) {
+    if (move.moveKind = move.QUIT) {
+      return;
+    }
+    if (move.moveKind = move.STEP) {
+      board[move.x2][move.y2] = board[move.x1][move.y1];
+    }
+    board[move.x1][move.y1] = null;
   }
 
 
