@@ -165,10 +165,7 @@ public class Board
       if (network != null)
         networks.insertFront(network);
     }
-    if (networks.length() == 0)
-      return null;
-    else
-      return networks;
+    return networks;
   }
 
   public Chain findNetwork(Piece piece, Chain currentNetwork, int prevDirection)
@@ -204,8 +201,12 @@ public class Board
     if (!isOnValidGoal(x,y,color)) {
       return false;
     }
-    int startX = network.first().x;
-    int startY = network.first().y;
+    Piece start = network.first();
+    if (start == null) {
+      return false;
+    }
+    int startX = start.x;
+    int startY = start.y;
     if (color == WHITE) {
       return startX != piece.x;
     }
@@ -497,13 +498,26 @@ public class Board
     p1 = b.findNextPieceInDirection(p, DIRECTION_UP_RIGHT);
     expect("[1:4,2]", p1);
 
-    
+    // isintargetEndZone
+    m = new Move(0,4);
+    b.performValidMove(m, WHITE);
+    print(b);
+    Chain ch = new Chain(WHITE);
+    ch.addPiece(b.board[0][2]);
+    expect(true, b.pieceIsInTargetEndZone(b.board[7][2], ch));
+    expect(false, b.pieceIsInTargetEndZone(b.board[0][4], ch));
+
+
 
     //Find Network:
     m = new Move(4,3);
     b.performValidMove(m, WHITE);
     m = new Move(2,3);
     b.performValidMove(m, WHITE);
+    m = new Move(0,3);
+    b.performValidMove(m, WHITE);
+    print(b);
+    expect(0, b.findAllNetworks(WHITE).length());
 
 
   }
