@@ -8,7 +8,7 @@ public class Network
 
   public boolean contains(Piece piece)   
   {
-    return (pieces.contain(piece));
+    return pieces.contains(piece);
   }
 
   public void addPiece(Piece piece)
