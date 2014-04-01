@@ -57,12 +57,12 @@ public class Board
     return false;
   }
 
-  private boolean isInChainedCluster(int x, int y, Piece original, int color) {
+  private boolean isInChainedCluster(int x, int y, int color) {
     for (int i = -1; i < 2; i++) {
       for (int j = -1; j < 2; j++) {
         try{
           Piece piece = board[x + i][y + j];
-          if (piece == null || (i == 0 && j == 0 ) || original == piece) {
+          if (piece == null || (i == 0 && j == 0 )) {
             continue;
           }
           if (piece.color == color) {
@@ -86,7 +86,7 @@ public class Board
           }
           if (piece.color == color) {
             counter += 1;
-            if (isInChainedCluster(x + i, y + j, piece, color)) {
+            if (isInChainedCluster(x + i, y + j, color)) {
               return true;
             }
           }
@@ -132,15 +132,15 @@ public class Board
     piece.y = move.y1;
   }
 
-  public void undoMove(Move move, int color) {
+  public void undoMove(Move move) {
     if (move.moveKind == move.QUIT) {
       return;
     }
     if (move.moveKind == move.STEP) {
       Piece piece = board[move.x1][move.y1];
       board[move.x2][move.y2] = piece;
-      piece.x = move.x1;
-      piece.y = move.y1;
+      piece.x = move.x2;
+      piece.y = move.y2;
     }
     board[move.x1][move.y1] = null;
   }
@@ -430,8 +430,24 @@ public class Board
     b.performValidMove(m, BLACK);
     print(b);
 
-    b.undoValidMove(m, BLACK);
+    b.undoMove(m);
     print(b);
+
+    m = new Move(7,2);
+    b.performValidMove(m, WHITE);
+    print(b);
+    b.undoMove(m);
+    print(b);
+
+    // isInCluster
+    b.performValidMove(m, WHITE);
+    m = new Move(6,3);
+    b.performValidMove(m, WHITE);
+    print(b);
+    expect(true, b.isInCluster(7,3,WHITE));
+    expect(true, b.isInCluster(7,4,WHITE));
+    expect(false, b.isInCluster(7,4,BLACK));
+    expect(true, b.isInCluster(7,2,WHITE));
 
   }
 }
