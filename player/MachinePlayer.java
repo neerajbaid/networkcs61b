@@ -87,7 +87,7 @@ public class MachinePlayer extends Player {
     if (!board.hasPiecesLeft(color)) {
       variableSearchDepth = searchDepth - 3;
     }
-    ScoredMove scoredMove = chooseMoveHelper(color, -Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
+    ScoredMove scoredMove = chooseMoveHelper(color, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
     Move move = scoredMove.move;
     board.performValidMove(move, color);
     return move;
@@ -97,7 +97,6 @@ public class MachinePlayer extends Player {
     DList validMoves = validMoves(side);
 
     if (depth >= variableSearchDepth) {
-      // System.out.println("depth hit");
       int max = 0;
       Move best = null;
       for (ListNode node : validMoves) {
@@ -130,7 +129,6 @@ public class MachinePlayer extends Player {
     }
     myBest.move = (Move) validMoves.front().item();
     for (ListNode node : validMoves) {
-      // System.out.println("hi");
       Move move = (Move) node.item();
       board.performValidMove(move, side);
       replyBest = chooseMoveHelper(Board.flipColor(side), alpha, beta, depth + 1);
@@ -145,7 +143,6 @@ public class MachinePlayer extends Player {
         beta = replyBest.score;
       }
       if (alpha >= beta) {
-        // System.out.println("alpha");
         return myBest;
       }
     }

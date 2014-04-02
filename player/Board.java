@@ -531,13 +531,13 @@ public class Board {
       }
     }
     //if neither opponent has a sure win, then calculate an intermediate score and sum it with a score based on if I can add or set
-    return this.intermediate(flipColor(player)) + 5 * ((myPlacedPieces <= 10) ? 1 : 0);
+    return intermediate(flipColor(player)) + 5 * ((myPlacedPieces <= 10) ? 1 : 0);
   }
 
   /**
     * Returns the number of pairs a Piece can form with the pieces around it.
     */
-  public int numPairsPieceCanForm(Piece piece) {
+  private int numPairsPieceCanForm(Piece piece) {
     int num = 0;
     for (int direction : DIRECTIONS) {
       Piece nextPiece = findNextPieceInDirection(piece, direction);
