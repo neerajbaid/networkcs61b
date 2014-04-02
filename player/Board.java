@@ -113,8 +113,9 @@ public class Board {
   }
 
   /**
-    * Checks for clusters that might be formed by placing a piece of int color
+    * Checks if an illegal cluster would be formed if a piece of int color was placed
     * at the x, y coordinates
+    * Note that there should not be any piece at position x,y
     * Returns boolean
     */
   private boolean isInCluster(int x, int y, int color) {
