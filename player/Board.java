@@ -198,14 +198,14 @@ public class Board {
     if (move.moveKind == move.QUIT) {
       return;
     }
+    Piece piece = board[move.x1][move.y1];
     if (move.moveKind == move.STEP) {
-      Piece piece = board[move.x1][move.y1];
       board[move.x2][move.y2] = piece;
       piece.x = move.x2;
       piece.y = move.y2;
     }
     else {
-      colorPieces[color].remove(piece);
+      colorPieces[piece.color].remove(piece);
     }
     board[move.x1][move.y1] = null;
   }
