@@ -98,38 +98,42 @@ Machine player uses the following modules:
   
   Except:
 
+  class List implements the Iterable<ListNode> interface.
+
   DList:
     /**
-     *  Removes an object from the list
+     *  Removes an Object "item" from the list
      *  Achieved by removing the list node containing that object.
+     *  Warning: this runs in linear time.
      */
     public void remove(Object item)
 
     /**
-     *  Returns an iterator object for this list.
-     *  The object is a ListIterator
+     *  Returns an iterator object for this list (of type ListIterator<ListNode>).
      *  Used for for-in loops.
      */
     public Iterator<ListNode> iterator()
 
     /**
      *  Returns true if obj is contained in any of the nodes in this list
+     *  Warning: this runs in linear time.
      *  False otherwise.
      */
     public boolean contains(Object obj)
 
     /**
-     *  Returns a shallow copy of this DList (nodes are duplicated, not items)
+     *  Returns a shallow copy of this DList.
+     *  Only DListNodes are duplicated.
      */
     public DList copy()
 
     /**
-     *  Appends the nodes of list to the end of this DList.
-     *  The nodes are not copied/duplicated.
+     *  Appends the nodes of "list" to the end of this DList.
+     *  Warning: the nodes are not copied or duplicated, so do not modify "list" after extension.
      */
     public void extend(DList list)
 
-  ListIterator implements the standard Java Iterator<ListNode> interface exactly.
+  ListIterator implements the standard Java Iterator interface exactly. ListIterator returns ListNodes
 
 
 
@@ -137,22 +141,21 @@ Machine player uses the following modules:
   Implemented in class Board. Implemented by Sidd and Brian
 
   /**
-    * Checks if a move by the player for color
-    * would be a valid add move (even if move is a step move)
-    * Returns boolean
+    * Checks if a move would be a valid ADD move
+    * Even if the move is a STEP move, it is treated as an ADD move.
+    * int "color" represents the color of the player performing the move.
+    * Behavior undefined for a malformed move.
+    * Returns a boolean
     */
   protected boolean isValidAddMove(Move move, int color)
 
   /**
-    * Checks if a move for the player represented by color is valid
+    * Checks if a "move: for the player represented by int "color" is valid
+    * Adheres to all of the conditions specified in the project readme.
+    * Behavior undefined for a malformed move.
     * Returns boolean
     */
-  protected boolean isValidMove(Move move, int color) {
-    if (move.moveKind == Move.ADD && !hasPiecesLeft(color)) {
-      return false;
-    }
-    return isValidAddMove(move, color);
-  }
+  protected boolean isValidMove(Move move, int color)
 
 
 
@@ -160,8 +163,10 @@ Machine player uses the following modules:
   Implemented in class MachinePlayer. Implemented by Sidd and Brian.
 
   /**
-    * Returns a DList of all valid moves that the player represented by color (0 or 1)
-    * can take.
+    * Returns a DList of all valid moves that a player can make
+    * The player is represented by int "color", which is Board.BLACK or Board.WHITE.
+    * Entirely consists of either all add moves or all step moves
+    * moves in validMoves conform to the isValidMove method
     */
   public DList validMoves(int color)
 
@@ -171,8 +176,9 @@ Machine player uses the following modules:
   Implemented in class Board. Implemented by Neeraj.
 
   /**
-    * Finds the next Piece piece of the same color in specified direction.
-    * Returns a Piece
+    * Starting from "piece", returns the next Piece object of the same color in a specified direction.
+    * Returns null if not found.
+    * The values for different directions can be found in Board.DIRECTIONS
     */
   private Piece findNextPieceInDirection(Piece piece, int direction) {
 
@@ -182,11 +188,11 @@ Machine player uses the following modules:
   Implemented in class Board. Implemented by Neeraj.
 
   /**
-  * Finds all the networks currently on the board of a certain player.
-  * player is represented by color.
-  * Returns a DList of all the networks for that player.
-  */
-  public DList findAllNetworks(int color)
+    * Finds all the networks currently on the board for a certain player.
+    * The player is represented by int "color", which is Board.BLACK or Board.WHITE.
+    * Returns a DList of all the networks for that player.
+    */
+  protected DList findAllNetworks(int color)
 
 
 
@@ -194,18 +200,24 @@ Machine player uses the following modules:
   Implemented in class Board. Implemented by Sidd.
 
   /**
-  * Returns an evaluation score for the current board.
-  * Takes in a player's color and a boolean runIntermediate.
-  * runIntermediate determines whether or not the functon tries to arrive at an intermediate score 
-  * if no wins are found. 
-  * Returns an integer ranging from Integer.MIN_VALUE to Integer.MAX_VALUE
-  */
+    * Returns an evaluation score for the current board, for a specified player.
+    * The player is represented by int "color", which is Board.BLACK or Board.WHITE.
+    * "runIntermediate" determines whether or not the function returns an intermediate score 
+    * if no definite wins/losses are found. 
+    * If runIntermediate is false, and no wins/losses are found, evaluate returns 0.
+    * Evaluate returns an integer ranging from Board.MY_WIN to Board.OPP_WIN,
+    * which is Integer.MIN_VALUE to Integer.MAX_VALUE
+    */
   protected int evaluate(int player, boolean runIntermediate) {
 
 
 6) Minimax tree search for finding the best move
   Implemented in class MachinePlayer. Implemented by Brian.
 
-  // Returns a new move by "this" player.  Internally records the move (updates
-  // the internal game board) as a move by "this" player.
-  public Move chooseMove() {
+  /**
+    * Returns a new intelligent move by "this" player.  Internally records the move (updates
+    * the internal game board) as a move by "this" player.
+    * The search depth is the search depth set by the constructor (default is a depth of 4)
+    * Returns a Move object.
+    */
+  public Move chooseMove()

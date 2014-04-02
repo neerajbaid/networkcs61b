@@ -40,8 +40,10 @@ public class MachinePlayer extends Player {
   }
 
   /**
-    * Returns a DList of all valid moves that the player represented by color (0 or 1)
-    * can take.
+    * Returns a DList of all valid moves that a player can make
+    * The player is represented by int "color", which is Board.BLACK or Board.WHITE.
+    * Entirely consists of either all add moves or all step moves
+    * moves in validMoves conform to the isValidMove method
     */
   public DList validMoves(int color) {
     // find add moves:
@@ -91,8 +93,12 @@ public class MachinePlayer extends Player {
     return moves;
   }
 
-  // Returns a new move by "this" player.  Internally records the move (updates
-  // the internal game board) as a move by "this" player.
+/**
+  * Returns a new intelligent move by "this" player.  Internally records the move (updates
+  * the internal game board) as a move by "this" player.
+  * The search depth is the search depth set by the constructor (default is a depth of 4)
+  * Returns a Move object.
+  */
   public Move chooseMove() {
     // lower the depth for step pieces
     if (!board.hasPiecesLeft(color) && variableSearchDepth > STEP_DEPTH_DROP) {

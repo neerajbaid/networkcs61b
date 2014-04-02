@@ -130,8 +130,9 @@ public class DList extends List {
 
 
   /**
-   *  Removes an object from the list
+   *  Removes an Object "item" from the list
    *  Achieved by removing the list node containing that object.
+   *  Warning: this runs in linear time.
    */
   public void remove(Object item) {
     ListNode current = front();
@@ -145,7 +146,7 @@ public class DList extends List {
   }
 
   /**
-   *  Returns an iterator object for this list.
+   *  Returns an iterator object for this list (of type ListIterator<ListNode>).
    *  Used for for-in loops.
    */
   public Iterator<ListNode> iterator() {
@@ -154,6 +155,7 @@ public class DList extends List {
 
   /**
    *  Returns true if obj is contained in any of the nodes in this list
+   *  Warning: this runs in linear time.
    *  False otherwise.
    */
   public boolean contains(Object obj) {
@@ -166,7 +168,8 @@ public class DList extends List {
   }
 
   /**
-   *  Returns a shallow copy of this DList (nodes are duplicated, not items)
+   *  Returns a shallow copy of this DList.
+   *  Only DListNodes are duplicated.
    */
   public DList copy() {
     DList copy = new DList();
@@ -179,8 +182,8 @@ public class DList extends List {
   }
 
   /**
-   *  Appends the nodes of list to the end of this DList.
-   *  The nodes are not copied/duplicated.
+   *  Appends the nodes of "list" to the end of this DList.
+   *  Warning: the nodes are not copied or duplicated, so do not modify "list" after extension.
    */
   public void extend(DList list) {
     DListNode nodeFront = (DListNode) list.front();

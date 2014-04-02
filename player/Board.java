@@ -24,7 +24,8 @@ public class Board {
       DIRECTION_RIGHT, DIRECTION_DOWN_RIGHT, DIRECTION_DOWN,
       DIRECTION_DOWN_LEFT, DIRECTION_LEFT, DIRECTION_UP_LEFT };
 
-  private static final int MY_WIN = Integer.MAX_VALUE, OPP_WIN = Integer.MIN_VALUE;
+  protected static final int MY_WIN = Integer.MAX_VALUE;
+  protected static final int OPP_WIN = Integer.MIN_VALUE;
 
   //Board Limits
   protected static final int MAX_PIECES = 10;
@@ -142,9 +143,11 @@ public class Board {
   }
 
   /**
-    * Checks if a move by the player for color
-    * would be a valid add move (even if move is a step move)
-    * Returns boolean
+    * Checks if a move would be a valid ADD move
+    * Even if the move is a STEP move, it is treated as an ADD move.
+    * int "color" represents the color of the player performing the move.
+    * Behavior undefined for a malformed move.
+    * Returns a boolean
     */
   protected boolean isValidAddMove(Move move, int color) {
     int x = move.x1;
@@ -176,7 +179,9 @@ public class Board {
   }
 
   /**
-    * Checks if a move for the player represented by color is valid
+    * Checks if a "move: for the player represented by int "color" is valid
+    * Adheres to all of the conditions specified in the project readme.
+    * Behavior undefined for a malformed move.
     * Returns boolean
     */
   protected boolean isValidMove(Move move, int color) {
@@ -269,8 +274,8 @@ public class Board {
 
 
   /**
-    * Finds all the networks currently on the board of a certain player.
-    * player is represented by color.
+    * Finds all the networks currently on the board for a certain player.
+    * The player is represented by int "color", which is Board.BLACK or Board.WHITE.
     * Returns a DList of all the networks for that player.
     */
   protected DList findAllNetworks(int color)
@@ -354,8 +359,9 @@ public class Board {
   }
 
   /**
-    * Finds the next Piece piece of the same color in specified direction.
-    * Returns a Piece
+    * Starting from "piece", returns the next Piece object of the same color in a specified direction.
+    * Returns null if not found.
+    * The values for different directions can be found in Board.DIRECTIONS
     */
   private Piece findNextPieceInDirection(Piece piece, int direction) {
     int[] pieceCoordinate = new int[] {piece.x, piece.y};
@@ -514,11 +520,13 @@ public class Board {
   }
 
   /**
-    * Returns an evaluation score for the current board.
-    * Takes in a player's color and a boolean runIntermediate.
-    * runIntermediate determines whether or not the functon tries to arrive at an intermediate score 
-    * if no wins are found. 
-    * Returns an integer ranging from Integer.MIN_VALUE to Integer.MAX_VALUE
+    * Returns an evaluation score for the current board, for a specified player.
+    * The player is represented by int "color", which is Board.BLACK or Board.WHITE.
+    * "runIntermediate" determines whether or not the function returns an intermediate score 
+    * if no definite wins/losses are found. 
+    * If runIntermediate is false, and no wins/losses are found, evaluate returns 0.
+    * Evaluate returns an integer ranging from Board.MY_WIN to Board.OPP_WIN,
+    * which is Integer.MIN_VALUE to Integer.MAX_VALUE
     */
   protected int evaluate(int player, boolean runIntermediate) {
 
