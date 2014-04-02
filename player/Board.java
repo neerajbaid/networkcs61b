@@ -48,7 +48,7 @@ public class Board {
     * @return           the other player
     */
   protected static int flipColor(int color) {
-    return Math.abs(color - 1);
+    return 1-color;
   }
 
   /**
@@ -469,8 +469,8 @@ public class Board {
 
   //calculates one half of the intermediate score
   private int calcInterSight(int player) {
-    DList playerPieces = piecesOfPlayer(player);
-    DList opponentPieces = piecesOfPlayer(1 - player);
+    DList playerPieces = getPieces(player);
+    DList opponentPieces = getPieces(flipColor(player));
     DListNode currentPiece = (DListNode) playerPieces.front();
     int length = playerPieces.length();
     
@@ -558,23 +558,6 @@ public class Board {
     }
     //if neither opponent has a sure win, then calculate an intermediate score and sum it with a score based on if I can add or set
     return this.calcInterSight(playerIn) + 5 * ((myPlacedPieces <= 10) ? 1 : 0);
-  }
-
-  /**
-    * Returns a DList of all the pieces of a specified player.
-    */
-  public DList piecesOfPlayer(int player) {
-    DList pieces = new DList();
-    for (int x = 0; x < LENGTH; x++) {
-      for (int y = 0; y < LENGTH; y++) {
-    	  Piece piece = pieceAtCoordinate(new int[] { x, y });
-        if (piece != null && piece.color == player) {
-          pieces.insertBack(pieceAtCoordinate((new int[] { x, y })));
-
-        }
-      }
-    }
-    return pieces;
   }
 
   /**
