@@ -159,6 +159,7 @@ public class Board
 
   public DList findAllNetworks(int color)
   {
+    current_networks = new DList();
     DList beginningZonePieces = beginningZonePieces(color);
     System.out.println("beginning zone: " + beginningZonePieces.toString());
     System.out.println("first beginning piece: " + beginningZonePieces.front().item().toString());
