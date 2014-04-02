@@ -420,16 +420,8 @@ public class Board {
     return pieces;
   }
 
-<<<<<<< HEAD
   //calculates one half of the intermediate score
   private int calcInterSight(int player) {
-=======
-  /**
-    * Calculates the intermediate value of the board based on how many pairs are
-    *  formed by the player and the opponent.
-    */
-  private int calcInter(int player) {
->>>>>>> 1fe9044f6e762b23d7f50ffd01b32b5af6d848eb
     DList playerPieces = piecesOfPlayer(player);
     DList opponentPieces = piecesOfPlayer(1 - player);
     DListNode currentPiece = (DListNode) playerPieces.front();
@@ -439,12 +431,7 @@ public class Board {
     int yourScore = 0;
 
     while (length > 0) {
-<<<<<<< HEAD
       yourScore += numPairsPieceCanForm((Piece)currentPiece.item());   
-
-=======
-      yourScore += numPairsPieceCanForm((Piece)currentPiece.item());
->>>>>>> 1fe9044f6e762b23d7f50ffd01b32b5af6d848eb
       currentPiece = (DListNode) currentPiece.next();
       length--;
     }
@@ -455,10 +442,6 @@ public class Board {
     int otherScore = 0;
     while (length > 0) {
       otherScore += numPairsPieceCanForm((Piece)currentPiece.item());
-<<<<<<< HEAD
-
-=======
->>>>>>> 1fe9044f6e762b23d7f50ffd01b32b5af6d848eb
       currentPiece = (DListNode) currentPiece.next();
       length--;
     }
@@ -481,13 +464,9 @@ public class Board {
     ListNode current = networks.front();
     int networkLength = networks.length();
     int counter = 0;
-<<<<<<< HEAD
     int myPlacedPieces = 0;
     
     //look at all networks and determine whether pieces are at opposite goals
-=======
-
->>>>>>> 1fe9044f6e762b23d7f50ffd01b32b5af6d848eb
     while (counter < networkLength) {
       Chain network = (Chain) current.item();
 
@@ -523,26 +502,15 @@ public class Board {
       otherPlacedPieces += pieces.length();
 
       if (this.isOnValidGoal(front.x, front.y, playerIn)
-<<<<<<< HEAD
           && this.isOnValidGoal(back.x, back.y, playerIn)) {   
         return OPP_WIN;
-=======
-          && this.isOnValidGoal(back.x, back.y, playerIn)) {
-        return Integer.MIN_VALUE;
->>>>>>> 1fe9044f6e762b23d7f50ffd01b32b5af6d848eb
       }
 
       current = current.next();
       counter++;
     }
-<<<<<<< HEAD
-    
     //if neither opponent has a sure win, then calculate an intermediate score and sum it with a score based on if I can add or set
     return this.calcInterSight(playerIn) + 5 * ((myPlacedPieces <= 10) ? 1 : 0);
-=======
-
-    return calcInter(playerIn);
->>>>>>> 1fe9044f6e762b23d7f50ffd01b32b5af6d848eb
   }
 
   /**
