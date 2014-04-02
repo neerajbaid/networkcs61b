@@ -15,13 +15,15 @@ public class MachinePlayer extends Player {
   private int color;
   private int oppColor;
   private int searchDepth;
-  private static final int DEFAULT_DEPTH = 2;
+  private int variableSearchDepth;
+  private static final int DEFAULT_DEPTH = 5;
 
   // Creates a machine player with the given color.  Color is either 0 (black)
   // or 1 (white).  (White has the first move.)
   public MachinePlayer(int color) {
     board = new Board();
     searchDepth = DEFAULT_DEPTH;
+    this.variableSearchDepth = searchDepth;
     this.color = color;
     this.oppColor = Board.flipColor(color);
   }
@@ -31,6 +33,7 @@ public class MachinePlayer extends Player {
   public MachinePlayer(int color, int searchDepth) {
     board = new Board();
     this.searchDepth = searchDepth;
+    variableSearchDepth = searchDepth;
     this.color = color;
     this.oppColor = Board.flipColor(color);
   }
@@ -58,17 +61,14 @@ public class MachinePlayer extends Player {
   }
 
   public DList validMoves(int color){
-    DList validMoves;
-    DList myPieces = board.getPieces(color);
     // find add moves:
     if (board.hasPiecesLeft(color)) {
-      validMoves = validMovesHelper(color, null);
-    }
-    else {
-      validMoves = new DList();
+      return validMovesHelper(color, null);
     }
 
     // now find step moves:
+    DList myPieces = board.getPieces(color);
+    DList validMoves = new DList();
     ListNode current = myPieces.front();
     while(current.isValidNode()) {
       Piece piece = (Piece) current.item();
@@ -85,6 +85,10 @@ public class MachinePlayer extends Player {
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
+    // lower the depth for step pieces
+    if (!board.hasPiecesLeft(color)) {
+      variableSearchDepth = searchDepth - 3;
+    }
     ScoredMove scoredMove = chooseMoveHelper(color, -Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
     Move move = scoredMove.move;
     board.performValidMove(move, color);
@@ -94,7 +98,7 @@ public class MachinePlayer extends Player {
   private ScoredMove chooseMoveHelper(int side, int alpha, int beta, int depth) {
     DList validMoves = validMoves(side);
 
-    if (depth >= searchDepth) {
+    if (depth >= variableSearchDepth) {
       // System.out.println("depth hit");
       int max = 0;
       Move best = null;
@@ -131,7 +135,7 @@ public class MachinePlayer extends Player {
       // System.out.println("hi");
       Move move = (Move) node.item();
       board.performValidMove(move, side);
-      replyBest = chooseMoveHelper(Board.flipColor(side), alpha, beta, depth+1);
+      replyBest = chooseMoveHelper(Board.flipColor(side), alpha, beta, depth + 1);
       board.undoMove(move);
       if (side == color && replyBest.score > myBest.score) {
         myBest.move = move;
@@ -195,6 +199,7 @@ public class MachinePlayer extends Player {
     MachinePlayer o = new MachinePlayer(Board.BLACK, depth);
 
     // Test validMoves
+    // print(p.board);
     DList validMoves = p.validMoves(Board.WHITE);
     expect(8*6, validMoves.length()); // 6*8 = 48 possible add moves on empty board
     print(validMoves);
@@ -204,18 +209,27 @@ public class MachinePlayer extends Player {
     p.forceMove(m);
 
     // Test validMoves
+    print(p.board);
     validMoves = p.validMoves(Board.WHITE);
-    expect(2* (8*6 - 1) , validMoves.length()); // 6*8 - 1 = 47 possible add AND step moves.
+    expect(8*6-1, validMoves.length()); // 47 add moves
     expect(8*6-1, p.validMoves(Board.BLACK).length()); // 47 possible add moves
 
-    m = new Move(5,6);
-    p.forceMove(m);
+    p.forceMove(new Move(7,6));
+    p.forceMove(new Move(7,4));
+    p.forceMove(new Move(6,4));
+    p.forceMove(new Move(7,2));
+    p.forceMove(new Move(6,2));
+    p.forceMove(new Move(4,6));
+    p.forceMove(new Move(3,6));
+    p.forceMove(new Move(4,4));
+    p.forceMove(new Move(3,4));
 
-    // Test validMoves
+    // Now only step moves are allowed
+    print(p.board);
     validMoves = p.validMoves(Board.WHITE);
-    expect(6*8-8  +  46 * 2, validMoves.length()); // 6*8 - 8 = 40 possible add moves. 46 * 2 posssible step moves.
+    expect(198, validMoves.length());
     print(validMoves);
-    expect(8*6-2, p.validMoves(Board.BLACK).length()); // 46 possible add moves
+    expect(41, p.validMoves(Board.BLACK).length()); // 41 possible add moves
     print(p.board);
 
     // Test chooseMove and operators
