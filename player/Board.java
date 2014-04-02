@@ -7,8 +7,8 @@ import java.util.Arrays;
 public class Board {
   private Piece[][] board;
 
-  public static final int WHITE = 0;
-  public static final int BLACK = 1;
+  public static final int WHITE = 1;
+  public static final int BLACK = 0;
 
   public static final int DIRECTION_NONE = -1;
   public static final int DIRECTION_UP = 0;

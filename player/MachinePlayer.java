@@ -13,12 +13,13 @@ public class MachinePlayer extends Player {
   private Board board;
   private int color;
   private int searchDepth;
+  private static final int DEFAULT_DEPTH = 2;
 
   // Creates a machine player with the given color.  Color is either 0 (black)
   // or 1 (white).  (White has the first move.)
   public MachinePlayer(int color) {
     board = new Board();
-    searchDepth = 3; // default
+    searchDepth = DEFAULT_DEPTH;
     this.color = color;
   }
 
@@ -55,7 +56,7 @@ public class MachinePlayer extends Player {
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
-    return chooseMoveHelper(color, -Integer.MAX_VALUE, Integer.MAX_VALUE, searchDepth);
+    return chooseMoveHelper(color, -Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
   }
 
   public Move chooseMoveHelper(int side, int alpha, int beta, int depth) {
