@@ -10,17 +10,16 @@ import list.*;
  */
 public class MachinePlayer extends Player {
 
-  public static final int WHITE_COLOR = 0;
-  public static final int BLACK_COLOR = 1;
   private Board board;
   private int color;
   private int searchDepth;
+  private static final int DEFAULT_DEPTH = 2;
 
   // Creates a machine player with the given color.  Color is either 0 (black)
   // or 1 (white).  (White has the first move.)
   public MachinePlayer(int color) {
     board = new Board();
-    searchDepth = 3; // default
+    searchDepth = DEFAULT_DEPTH;
     this.color = color;
   }
 
@@ -32,7 +31,7 @@ public class MachinePlayer extends Player {
     this.color = color;
   }
   
-  public Move[] validMoves(Board board){
+  public Move[] validMoves(){
     DList moves = new DList();
     
     for(int i = 0; i < board.LENGTH; i++){
@@ -57,26 +56,34 @@ public class MachinePlayer extends Player {
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
-    return chooseMove(color, color, Board.flipColor(color), 1);
+    Move m = chooseMoveHelper(color, -Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
+    board.performValidMove(m, color);
+    return m;
   }
 
-  public Move chooseMove(int side, int alpha, int beta, int depth) {
+  public Move chooseMoveHelper(int side, int alpha, int beta, int depth) {
     Move myBest, replyBest;
-    int myBestScore, replyBestScore = -1; // check the value of this
-    Move[] validMoves = validMoves(board);
+    int myBestScore, replyBestScore;
+    if (side == color) {
+      myBestScore = alpha;
+      replyBestScore = beta;
+    } else {
+      myBestScore = beta;
+      replyBestScore = alpha;
+    }
+    Move[] validMoves = validMoves();
 
     if (depth == searchDepth) {
-      myBestScore = -1;
       myBest = validMoves[0];
       for (Move move : validMoves) {
         board.performValidMove(move, side);
         int score = board.evaluate(side);
         board.undoMove(move);
-        if (color == WHITE_COLOR && score > myBestScore) {
+        if (color == Board.WHITE && score > myBestScore) {
           myBestScore = score;
           myBest = move;
         }
-        if (color == BLACK_COLOR && score < myBestScore) {
+        if (color == Board.BLACK && score < myBestScore) {
           myBestScore = score;
           myBest = move;
         }
@@ -88,21 +95,17 @@ public class MachinePlayer extends Player {
       // return a Best with the Grid’s score, no move;
       // return new Move();
     // }
-    if (side == WHITE_COLOR) { //WHITE_COLOR = COMPUTER
-      myBestScore = alpha;
-    } else {
-      myBestScore = beta;
-    }
+
     myBest = validMoves[0];
     for (Move move : validMoves) {
       board.performValidMove(move, side);
-      replyBest = chooseMove(Board.flipColor(side), alpha, beta, depth+1);
+      replyBest = chooseMoveHelper(Board.flipColor(side), alpha, beta, depth+1);
       board.undoMove(move);
-      if (side == WHITE_COLOR && replyBestScore > myBestScore) {
+      if (side == Board.WHITE && replyBestScore > myBestScore) {
         myBest = move;
         myBestScore = replyBestScore;
         alpha = replyBestScore;
-      } else if (side == BLACK_COLOR && replyBestScore < myBestScore) {
+      } else if (side == Board.BLACK && replyBestScore < myBestScore) {
         myBest = move;
         myBestScore = replyBestScore;
         beta = replyBestScore;
@@ -137,6 +140,57 @@ public class MachinePlayer extends Player {
     }
     board.performValidMove(m, color);
     return true;
+  }
+
+  private static void expect(Object expect, Object o) {
+    System.out.println("Expect " + expect + ": " + o);
+  }
+
+  private static void print(Object o) {
+    System.out.println(o);
+  }
+  public static void main(String[] args) {
+    Move m;
+    int depth = 2;
+    MachinePlayer p = new MachinePlayer(Board.WHITE, depth);
+    MachinePlayer o = new MachinePlayer(Board.BLACK, depth);
+
+    m = p.chooseMove();
+    print("me: " + m);
+    expect(false, p.forceMove(m));
+    expect(true, o.opponentMove(m));
+
+    m = o.chooseMove();
+    print("opponent: " + m);
+    expect(true, p.opponentMove(m));
+    expect(false, o.forceMove(m));
+
+    m = p.chooseMove();
+    print("me: " + m);
+    expect(false, p.forceMove(m));
+    expect(true, o.opponentMove(m));
+
+    m = o.chooseMove();
+    print("opponent: " + m);
+    expect(true, p.opponentMove(m));
+    print(p.board);
+
+    m = p.chooseMove();
+    print("me: " + m);
+    expect(true, o.opponentMove(m));
+
+    m = o.chooseMove();
+    print("opponent: " + m);
+    expect(true, p.opponentMove(m));
+
+    m = p.chooseMove();
+    print("me: " + m);
+    expect(true, o.opponentMove(m));
+
+    m = o.chooseMove();
+    print("opponent: " + m);
+    expect(true, p.opponentMove(m));
+    print(p.board);
   }
 
 }

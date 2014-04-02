@@ -7,9 +7,11 @@ import java.util.Arrays;
 public class Board {
   private Piece[][] board;
 
-  public static final int WHITE = 0;
-  public static final int BLACK = 1;
+  //White and Black
+  public static final int WHITE = 1;
+  public static final int BLACK = 0;
 
+  //Directions
   public static final int DIRECTION_NONE = -1;
   public static final int DIRECTION_UP = 0;
   public static final int DIRECTION_UP_RIGHT = 1;
@@ -25,18 +27,28 @@ public class Board {
 
   private static final int MY_WIN = Integer.MAX_VALUE, OPP_WIN = Integer.MIN_VALUE;
 
+  //Board Size
   public static final int LENGTH = 8;
-  public static final int END_INDEX = 7;
+  public static final int END_INDEX = LENGTH-1;
 
   public Board() {
     board = new Piece[LENGTH][LENGTH];
   }
 
   // CHECKING VALID MOVE
+
+  /**
+    * Switches the player color.
+    * @parameter color: the integer representing the current player
+    * @return           the other player
+    */
   protected static int flipColor(int color) {
     return Math.abs(color - 1);
   }
 
+  /**
+    * Checks if a certain coordinate is in its goal zone.
+    */
   private boolean isOnValidGoal(int x, int y, int color) {
     if (isInCorner(x, y)) {
       return false;
@@ -48,10 +60,16 @@ public class Board {
     }
   }
 
+  /**
+    * Checks if a certain coordinate is in the wrong goal.
+    */
   private boolean isOnInvalidGoal(int x, int y, int color) {
     return isOnValidGoal(x, y, flipColor(color));
   }
 
+  /**
+    * Checks if a coordinate is in the corner of the board.
+    */
   private boolean isInCorner(int x, int y) {
     if (x == 0 || y == 0 || x == END_INDEX || y == END_INDEX) {
       int difference = Math.abs(x - y);
@@ -60,6 +78,9 @@ public class Board {
     return false;
   }
 
+  /**
+    *
+    */
   private boolean isInChainedCluster(int x, int y, int color) {
     for (int i = -1; i < 2; i++) {
       for (int j = -1; j < 2; j++) {
@@ -78,8 +99,11 @@ public class Board {
     return false;
   }
 
+  /**
+    *
+    */
   private boolean isInCluster(int x, int y, int color) {
-    // count how many pieces in vacinity
+    //count how many pieces in vicinity
     int counter = 0;
     for (int i = -1; i < 2; i++) {
       for (int j = -1; j < 2; j++) {
@@ -101,7 +125,11 @@ public class Board {
     return counter >= 2;
   }
 
-  public boolean isValidMove(Move move, int color) {
+  /**
+    * Checks if a certain move by a specific player is valid on the Board. Adheres
+    *   to all the rules outlined in the readme.
+    */
+  public boolean isValidMove(Move move, int color){
     int x = move.x1;
     int y = move.y1;
     if (isInCorner(x, y)) {
@@ -119,7 +147,10 @@ public class Board {
 
   // MANIPULATING BOARD
 
-  // Must be a valid move. If not valid, will break
+  /**
+    * Performs a move for a specific player.
+    * @parameter move:  Must be a valid move.
+    */
   public void performValidMove(Move move, int color) {
     if (move.moveKind == move.QUIT) {
       return;
@@ -136,6 +167,10 @@ public class Board {
     piece.y = move.y1;
   }
 
+  /**
+    * Reverses a move.
+    * @parameter move:  The Move that is to be reversed.
+    */
   public void undoMove(Move move) {
     if (move.moveKind == move.QUIT) {
       return;
@@ -150,7 +185,10 @@ public class Board {
   }
 
   // # pragma mark - Network Finding #iOSProgrammers #ye
-
+  /**
+    * Finds all the networks currently on the board of a certain player.
+    * @return:  Returns all the networks that have been found.
+    */
   public DList findAllNetworks(int color)
   {
     DList beginningZonePieces = beginningZonePieces(color);
@@ -174,10 +212,19 @@ public class Board {
       length--;
       pieceNode = pieceNode.next();
     }
-
     return networks;
   }
 
+  /**
+    * Finds a network based on a starting piece. Each time it finds another piece,
+    *   it adds it to the network it is currently constructing.
+    * @parameter piece:          The Piece from where findNetwork should begin its search.
+    * @parameter currentNetwork: The Chain currently being constructed.
+    * @parameter prevDirection:  The direction from which the last piece was gained.
+    *                              This is so that we cannot have more than 2 pieces
+    *                              in a line, as specified in the readme.
+    * @parameter networks:       A DList of all the networks that have already been found.
+    */
   public void findNetwork(Piece piece, Chain currentNetwork, int prevDirection, DList networks)
   {
     if (pieceIsInTargetEndZone(piece, currentNetwork))
@@ -227,6 +274,9 @@ public class Board {
     }
   }
 
+  /**
+    * Checks if a piece is in its end zone.
+    */
   public boolean pieceIsInTargetEndZone(Piece piece, Chain network) {
     int x = piece.x;
     int y = piece.y;
@@ -247,6 +297,9 @@ public class Board {
     return startY != piece.y;
   }
 
+  /**
+    * Finds the next Piece of the same color in direction.
+    */
   public Piece findNextPieceInDirection(Piece piece, int direction)
   {
     int[] pieceCoordinate = new int[] {piece.x, piece.y};
@@ -265,6 +318,9 @@ public class Board {
     return null;
   }
 
+  /**
+    *  Returns the next coordinate in direction.
+    */
   public int[] incrementCoordinateInDirection(int[] coordinate, int direction) {
     int x = coordinate[0];
     int y = coordinate[1];
@@ -296,18 +352,29 @@ public class Board {
 
   // # pragma mark - Utility Methods #iOSProgrammers
 
+  /**
+    *  Checks if coordinate is on the board.
+    */
   public boolean containsCoordinate(int[] coordinate) {
     int x = coordinate[0];
     int y = coordinate[1];
     return (x < LENGTH && x >= 0 && y < LENGTH && y >= 0);
   }
 
+  /**
+    *  Returns the piece at coordinate.
+    */
   public Piece pieceAtCoordinate(int[] coordinate) {
     int x = coordinate[0];
     int y = coordinate[1];
     return board[x][y];
   }
 
+  /**
+    *  Gets all the pieces in a player's beginning zone. One of the zones has been
+    *    indicated beginning and one end simply for the purposes of network finding
+    *    since networks are direction agnostic.
+    */
   public DList beginningZonePieces(int color) {
     DList pieces = new DList();
     if (color == WHITE) {
@@ -328,6 +395,11 @@ public class Board {
     return pieces;
   }
 
+  /**
+    *  Gets all the pieces in a player's end zone. One of the zones has been
+    *    indicated beginning and one end simply for the purposes of network finding
+    *    since networks are direction agnostic.
+    */
   public DList endZonePieces(int color) {
     DList pieces = new DList();
     if (color == WHITE) {
@@ -348,8 +420,16 @@ public class Board {
     return pieces;
   }
 
+<<<<<<< HEAD
   //calculates one half of the intermediate score
   private int calcInterSight(int player) {
+=======
+  /**
+    * Calculates the intermediate value of the board based on how many pairs are
+    *  formed by the player and the opponent.
+    */
+  private int calcInter(int player) {
+>>>>>>> 1fe9044f6e762b23d7f50ffd01b32b5af6d848eb
     DList playerPieces = piecesOfPlayer(player);
     DList opponentPieces = piecesOfPlayer(1 - player);
     DListNode currentPiece = (DListNode) playerPieces.front();
@@ -359,8 +439,12 @@ public class Board {
     int yourScore = 0;
 
     while (length > 0) {
+<<<<<<< HEAD
       yourScore += numPairsPieceCanForm((Piece)currentPiece.item());   
 
+=======
+      yourScore += numPairsPieceCanForm((Piece)currentPiece.item());
+>>>>>>> 1fe9044f6e762b23d7f50ffd01b32b5af6d848eb
       currentPiece = (DListNode) currentPiece.next();
       length--;
     }
@@ -371,7 +455,10 @@ public class Board {
     int otherScore = 0;
     while (length > 0) {
       otherScore += numPairsPieceCanForm((Piece)currentPiece.item());
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1fe9044f6e762b23d7f50ffd01b32b5af6d848eb
       currentPiece = (DListNode) currentPiece.next();
       length--;
     }
@@ -380,6 +467,10 @@ public class Board {
     return yourScore - otherScore;
   }
 
+  /**
+    * Evaluates the board based on the intermediate score and whether or not
+    *  there is a network completed.
+    */
   public int evaluate(int playerIn) {
     int player = playerIn;
 
@@ -390,9 +481,13 @@ public class Board {
     ListNode current = networks.front();
     int networkLength = networks.length();
     int counter = 0;
+<<<<<<< HEAD
     int myPlacedPieces = 0;
     
     //look at all networks and determine whether pieces are at opposite goals
+=======
+
+>>>>>>> 1fe9044f6e762b23d7f50ffd01b32b5af6d848eb
     while (counter < networkLength) {
       Chain network = (Chain) current.item();
 
@@ -411,13 +506,10 @@ public class Board {
       current = current.next();
       counter++;
     }
-
-    // switch players
-    player = 1 - player;
-    networks = this.findAllNetworks(player);
+    player = flipColor(player);
+    networks = findAllNetworks(player);
     reachesGoal = false;
     current = networks.front();
-
     networkLength = networks.length();
     counter = 0;
     int otherPlacedPieces = 0;
@@ -425,25 +517,37 @@ public class Board {
     //look at all networks and determine whether pieces are at opposite goals 
     while (counter < networkLength) {
       Chain network = (Chain) current.item();
-
       DList pieces = network.getPieces();
       Piece front = (Piece) pieces.front().item();
       Piece back = (Piece) pieces.back().item();
       otherPlacedPieces += pieces.length();
 
       if (this.isOnValidGoal(front.x, front.y, playerIn)
+<<<<<<< HEAD
           && this.isOnValidGoal(back.x, back.y, playerIn)) {   
         return OPP_WIN;
+=======
+          && this.isOnValidGoal(back.x, back.y, playerIn)) {
+        return Integer.MIN_VALUE;
+>>>>>>> 1fe9044f6e762b23d7f50ffd01b32b5af6d848eb
       }
 
       current = current.next();
       counter++;
     }
+<<<<<<< HEAD
     
     //if neither opponent has a sure win, then calculate an intermediate score and sum it with a score based on if I can add or set
     return this.calcInterSight(playerIn) + 5 * ((myPlacedPieces <= 10) ? 1 : 0);
+=======
+
+    return calcInter(playerIn);
+>>>>>>> 1fe9044f6e762b23d7f50ffd01b32b5af6d848eb
   }
 
+  /**
+    * Returns a DList of all the pieces of a specified player.
+    */
   public DList piecesOfPlayer(int player) {
     DList pieces = new DList();
     for (int x = 0; x < LENGTH; x++) {
@@ -451,13 +555,16 @@ public class Board {
     	  Piece piece = pieceAtCoordinate(new int[] { x, y });
         if (piece != null && piece.color == player) {
           pieces.insertBack(pieceAtCoordinate((new int[] { x, y })));
-          
+
         }
       }
     }
     return pieces;
   }
 
+  /**
+    * Returns the number of pairs a Piece can form with the pieces around it.
+    */
   public int numPairsPieceCanForm(Piece piece) {
     int num = 0;
     for (int direction : DIRECTIONS) {
@@ -602,7 +709,7 @@ public class Board {
     ch.addPiece(b.board[0][2]);
     expect(true, b.pieceIsInTargetEndZone(b.board[7][2], ch));
     expect(false, b.pieceIsInTargetEndZone(b.board[0][4], ch));
-    
+
     b = new Board();
 
     // Find Network:
@@ -615,8 +722,5 @@ public class Board {
     b.performValidMove(new Move(1, 3), BLACK);
     print(b);
     print("eval " + b.evaluate(0));
-    
-    
-
   }
 }
