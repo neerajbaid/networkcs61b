@@ -143,7 +143,20 @@ public class Board {
     if (isOnInvalidGoal(x, y, color)) {
       return false;
     }
-    return !isInCluster(move.x1, move.y1, color);
+
+    // just for cluster detection, flip color if step move
+    // this is a trick for accounting for the fact that cluster detection for step moves
+    // should ignore the original (source) piece
+    Piece stepPiece = null;
+    if (move.moveKind == move.STEP) {
+      stepPiece = board[move.x2][move.y2];
+      stepPiece.color = flipColor(stepPiece.color);
+    }
+    boolean clustered = isInCluster(move.x1, move.y1, color);
+    if (stepPiece != null) {
+      stepPiece.color = flipColor(stepPiece.color);
+    }
+    return !clustered;
   }
 
   /**
