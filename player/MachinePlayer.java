@@ -3,6 +3,7 @@
 package player;
 
 import list.*;
+import java.util.Arrays; // DEBUGGING PURPOSES ONLY
 
 /**
  *  An implementation of an automatic Network player.  Keeps track of moves
@@ -31,51 +32,51 @@ public class MachinePlayer extends Player {
     this.color = color;
   }
   
-  private Move[] validMoves(int color){
-    DList addMoves = new DList();
-
-    for(int i = 0; i < board.LENGTH; i++){
-      for(int j = 0; j < board.LENGTH; j++){
-        Move move = new Move(i, j);
-        if(board.isValidMove(move, color)){
-          addMoves.insertFront(move);
+  private DList validMovesHelper (int color, Piece stepPiece) {
+    DList moves = new DList();
+    for(int x = 0; x < board.LENGTH; x++){
+      for(int y = 0; y < board.LENGTH; y++){
+        Move move = new Move(x, y);
+        if(board.isValidAddMove(move, color)){
+          if (stepPiece != null) {
+            // cannot step back onto where the piece originally was
+            if (stepPiece.x == x && stepPiece.y == y) {
+              continue;
+            }
+            move.moveKind = move.STEP;
+            move.x2 = stepPiece.x;
+            move.y2 = stepPiece.y;
+          }
+          moves.insertFront(move);
         }
       }
     }
+    return moves;
+  }
+
+  public DList validMoves(int color){
     DList validMoves;
     DList myPieces = board.getPieces(color);
-    int size = 0;
+    // find add moves:
     if (board.hasPiecesLeft(color)) {
-      validMoves = addMoves;
-      size = addMoves.length();
+      validMoves = validMovesHelper(color, null);
     }
     else {
       validMoves = new DList();
     }
-    size += size * myPieces.length();
 
-    Move[] arr = new Move[size];
-    int i = 0;
-    ListNode current = validMoves.front();
+    // now find step moves:
+    ListNode current = myPieces.front();
     while(current.isValidNode()) {
-      arr[i] = (Move) current.item();
-      i++;
-      current = current.next();
-    }
-    current = myPieces.front();
-    while (current.isValidNode()) {
       Piece piece = (Piece) current.item();
-      ListNode nested = addMoves.front();
-      while(nested.isValidNode()) {
-        Move addMove = (Move) nested.item();
-        arr[i] = new Move(addMove.x1, addMove.y1, piece.x, piece.y);
-        i++;
-        nested = nested.next();
-      }
+      board.tempRemove(piece);
+      DList newMoves = validMovesHelper(color, piece);
+      validMoves.extend(newMoves);
+      board.tempRestore(piece);
       current = current.next();
     }
     
-    return arr;
+    return validMoves;
   }
 
   // Returns a new move by "this" player.  Internally records the move (updates
@@ -96,11 +97,13 @@ public class MachinePlayer extends Player {
       myBestScore = beta;
       replyBestScore = alpha;
     }
-    Move[] validMoves = validMoves(side);
+    DList validMoves = validMoves(side);
 
     if (depth == searchDepth) {
-      myBest = validMoves[0];
-      for (Move move : validMoves) {
+      myBest = (Move) validMoves.front().item();
+      ListNode current = validMoves.front();
+      while(current.isValidNode()) {
+        Move move = (Move) current.item();
         board.performValidMove(move, side);
         int score = board.evaluate(side);
         board.undoMove(move);
@@ -112,6 +115,7 @@ public class MachinePlayer extends Player {
           myBestScore = score;
           myBest = move;
         }
+        current = current.next();
       }
       return myBest;
     }
@@ -121,8 +125,10 @@ public class MachinePlayer extends Player {
       // return new Move();
     // }
 
-    myBest = validMoves[0];
-    for (Move move : validMoves) {
+    ListNode current = validMoves.front();
+    myBest = (Move) current.item();
+    while(current.isValidNode()) {
+      Move move = (Move) current.item();
       board.performValidMove(move, side);
       replyBest = chooseMoveHelper(Board.flipColor(side), alpha, beta, depth+1);
       board.undoMove(move);
@@ -138,6 +144,7 @@ public class MachinePlayer extends Player {
       if (alpha >= beta) {
         return myBest;
       }
+      current = current.next();
     }
     return myBest;
   }
@@ -167,6 +174,12 @@ public class MachinePlayer extends Player {
     return true;
   }
 
+
+
+
+  // ***** TESTING CODE ******
+  // READERS DO NOT NEED TO READ THE CODE BELOW
+
   private static void expect(Object expect, Object o) {
     System.out.println("Expect " + expect + ": " + o);
   }
@@ -179,6 +192,34 @@ public class MachinePlayer extends Player {
     int depth = 1;
     MachinePlayer p = new MachinePlayer(Board.WHITE, depth);
     MachinePlayer o = new MachinePlayer(Board.BLACK, depth);
+
+    // Test validMoves
+    DList validMoves = p.validMoves(Board.WHITE);
+    expect(8*6, validMoves.length()); // 6*8 = 48 possible add moves on empty board
+    print(validMoves);
+    expect(8*6, o.validMoves(Board.BLACK).length());
+
+    m = new Move(6,6);
+    p.forceMove(m);
+
+    // Test validMoves
+    validMoves = p.validMoves(Board.WHITE);
+    expect(2* (8*6 - 1) , validMoves.length()); // 6*8 - 1 = 47 possible add AND step moves.
+    expect(8*6-1, p.validMoves(Board.BLACK).length()); // 47 possible add moves
+
+    m = new Move(5,6);
+    p.forceMove(m);
+
+    // Test validMoves
+    validMoves = p.validMoves(Board.WHITE);
+    expect(6*8-8  +  46 * 2, validMoves.length()); // 6*8 - 8 = 40 possible add moves. 46 * 2 posssible step moves.
+    print(validMoves);
+    expect(8*6-2, p.validMoves(Board.BLACK).length()); // 46 possible add moves
+    print(p.board);
+
+    // Test chooseMove and operators
+    p = new MachinePlayer(Board.WHITE, depth);
+    o = new MachinePlayer(Board.BLACK, depth);
 
     m = p.chooseMove();
     print("me: " + m);
