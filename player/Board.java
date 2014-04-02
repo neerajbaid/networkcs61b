@@ -146,7 +146,7 @@ public class Board {
     * would be a valid add move (even if move is a step move)
     * Returns boolean
     */
-  public boolean isValidAddMove(Move move, int color) {
+  protected boolean isValidAddMove(Move move, int color) {
     int x = move.x1;
     int y = move.y1;
     if (isInCorner(x, y)) {
@@ -179,7 +179,7 @@ public class Board {
     * Checks if a move for the player represented by color is valid
     * Returns boolean
     */
-  protected boolean isValidMove(Move move, int color){
+  protected boolean isValidMove(Move move, int color) {
     if (move.moveKind == Move.ADD && !hasPiecesLeft(color)) {
       return false;
     }

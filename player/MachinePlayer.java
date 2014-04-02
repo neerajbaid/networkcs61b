@@ -43,7 +43,7 @@ public class MachinePlayer extends Player {
     * Returns a DList of all valid moves that the player represented by color (0 or 1)
     * can take.
     */
-  public DList validMoves(int color){
+  public DList validMoves(int color) {
     // find add moves:
     if (board.hasPiecesLeft(color)) {
       return validMovesHelper(color, null);
