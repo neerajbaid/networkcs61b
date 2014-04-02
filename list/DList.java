@@ -128,6 +128,11 @@ public class DList extends List {
     return head.prev;
   }
 
+
+  /**
+   *  Removes an object from the list
+   *  Achieved by removing the list node containing that object.
+   */
   public void remove(Object item) {
     ListNode current = front();
     while (current.isValidNode()) {

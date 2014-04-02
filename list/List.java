@@ -75,10 +75,4 @@ public abstract class List implements Iterable<ListNode>{
    *
    *  @return a String representation of this List.
    */
-
-  public abstract boolean contains(Object obj);
-
-  public abstract Iterator<ListNode> iterator();
-
-  public abstract String toString();
 }
