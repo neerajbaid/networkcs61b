@@ -14,7 +14,7 @@ public class MachinePlayer extends Player {
   private Board board;
   private int color;
   private int searchDepth;
-  private static final int DEFAULT_DEPTH = 2;
+  private static final int DEFAULT_DEPTH = 1;
 
   // Creates a machine player with the given color.  Color is either 0 (black)
   // or 1 (white).  (White has the first move.)
@@ -99,7 +99,7 @@ public class MachinePlayer extends Player {
     }
     DList validMoves = validMoves(side);
 
-    if (depth == searchDepth) {
+    if (depth >= searchDepth) {
       myBest = (Move) validMoves.front().item();
       ListNode current = validMoves.front();
       while(current.isValidNode()) {
