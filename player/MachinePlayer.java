@@ -157,44 +157,39 @@ public class MachinePlayer extends Player {
 
     m = p.chooseMove();
     print("me: " + m);
-    expect(true, p.forceMove(m));
+    expect(false, p.forceMove(m));
     expect(true, o.opponentMove(m));
 
     m = o.chooseMove();
     print("opponent: " + m);
     expect(true, p.opponentMove(m));
-    expect(true, o.forceMove(m));
+    expect(false, o.forceMove(m));
 
     m = p.chooseMove();
     print("me: " + m);
-    expect(true, p.forceMove(m));
+    expect(false, p.forceMove(m));
     expect(true, o.opponentMove(m));
 
     m = o.chooseMove();
     print("opponent: " + m);
     expect(true, p.opponentMove(m));
-    expect(true, o.forceMove(m));
     print(p.board);
 
     m = p.chooseMove();
     print("me: " + m);
-    expect(true, p.forceMove(m));
     expect(true, o.opponentMove(m));
 
     m = o.chooseMove();
     print("opponent: " + m);
     expect(true, p.opponentMove(m));
-    expect(true, o.forceMove(m));
 
     m = p.chooseMove();
     print("me: " + m);
-    expect(true, p.forceMove(m));
     expect(true, o.opponentMove(m));
 
     m = o.chooseMove();
     print("opponent: " + m);
     expect(true, p.opponentMove(m));
-    expect(true, o.forceMove(m));
     print(p.board);
   }
 
