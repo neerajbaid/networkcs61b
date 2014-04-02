@@ -37,7 +37,7 @@ public class Board {
   // private int blackPieces = MAX_PIECES;
 
   public Board() {
-    colorPieces = {new DList(), new DList()};
+    colorPieces = new DList[] {new DList(), new DList()};
     board = new Piece[LENGTH][LENGTH];
   }
 

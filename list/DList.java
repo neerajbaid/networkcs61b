@@ -128,6 +128,16 @@ public class DList extends List {
     return head.prev;
   }
 
+  public void remove(Object item) {
+    ListNode current = front();
+    while (current.isValidNode()) {
+      if (current.item() == item) {
+        current.remove();
+        return;
+      }
+      current = current.next();
+    }
+  }
 
   public Iterator<ListNode> iterator() {
     return new ListIterator(this);
@@ -234,6 +244,10 @@ public class DList extends List {
     testInvalidNode(p);
     l.insertFront(new Integer(10));
     System.out.println("l after insertFront(10) should be [  10  ]: " + l);
+  }
+
+  public static void testNewMethods() {
+
   }
 
   public static void main(String[] args) {
