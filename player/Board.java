@@ -273,7 +273,7 @@ public class Board {
     * player is represented by color.
     * Returns a DList of all the networks for that player.
     */
-  public DList findAllNetworks(int color)
+  protected DList findAllNetworks(int color)
   {
     DList beginningZonePieces = beginningZonePieces(color);
     DList networks = new DList();
@@ -520,7 +520,7 @@ public class Board {
     * if no wins are found. 
     * Returns an integer ranging from Integer.MIN_VALUE to Integer.MAX_VALUE
     */
-  public int evaluate(int player, boolean runIntermediate) {
+  protected int evaluate(int player, boolean runIntermediate) {
 
     //find if any network reaches goal, if so then return my win
     DList networks = findAllNetworks(player);
