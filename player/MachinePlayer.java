@@ -31,22 +31,47 @@ public class MachinePlayer extends Player {
     this.color = color;
   }
   
-  public Move[] validMoves(){
-    DList moves = new DList();
-    
+  public Move[] validMoves(int color){
+    DList addMoves = new DList();
+
     for(int i = 0; i < board.LENGTH; i++){
-      for(int j = 0; j < board.LENGTH; j++){   
+      for(int j = 0; j < board.LENGTH; j++){
         Move move = new Move(i, j);
         if(board.isValidMove(move, color)){
-          moves.insertBack(move);
+          addMoves.insertFront(move);
         }
       }
     }
-    
-    Move[] arr = new Move[moves.length()];   
-    ListNode current = moves.front();
-    for(int i = 0; i < arr.length; i++){
+    DList validMoves;
+    DList myPieces = board.getPieces(color);
+    int size = 0;
+    if (board.hasPiecesLeft(color)) {
+      validMoves = addMoves;
+      size = addMoves.length();
+    }
+    else {
+      validMoves = new DList();
+    }
+    size += size * myPieces.length();
+
+    Move[] arr = new Move[size];
+    int i = 0;
+    ListNode current = validMoves.front();
+    while(current.isValidNode()) {
       arr[i] = (Move) current.item();
+      i++;
+      current = current.next();
+    }
+    current = myPieces.front();
+    while (current.isValidNode()) {
+      Piece piece = (Piece) current.item();
+      ListNode nested = addMoves.front();
+      while(nested.isValidNode()) {
+        Move addMove = (Move) nested.item();
+        arr[i] = new Move(addMove.x1, addMove.y1, piece.x, piece.y);
+        i++;
+        nested = nested.next();
+      }
       current = current.next();
     }
     
@@ -71,7 +96,7 @@ public class MachinePlayer extends Player {
       myBestScore = beta;
       replyBestScore = alpha;
     }
-    Move[] validMoves = validMoves();
+    Move[] validMoves = validMoves(side);
 
     if (depth == searchDepth) {
       myBest = validMoves[0];
