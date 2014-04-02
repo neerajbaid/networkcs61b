@@ -149,10 +149,51 @@ public class MachinePlayer extends Player {
   }
   public static void main(String[] args) {
     Move m;
-    MachinePlayer p = new MachinePlayer(Board.WHITE, 1);
-    m = p.chooseMove();
-    print(m);
+    int depth = 2;
+    MachinePlayer p = new MachinePlayer(Board.WHITE, depth);
+    MachinePlayer o = new MachinePlayer(Board.BLACK, depth);
 
+    m = p.chooseMove();
+    print("me: " + m);
+    expect(true, p.forceMove(m));
+    expect(true, o.opponentMove(m));
+
+    m = o.chooseMove();
+    print("opponent: " + m);
+    expect(true, p.opponentMove(m));
+    expect(true, o.forceMove(m));
+
+    m = p.chooseMove();
+    print("me: " + m);
+    expect(true, p.forceMove(m));
+    expect(true, o.opponentMove(m));
+
+    m = o.chooseMove();
+    print("opponent: " + m);
+    expect(true, p.opponentMove(m));
+    expect(true, o.forceMove(m));
+    print(p.board);
+
+    m = p.chooseMove();
+    print("me: " + m);
+    expect(true, p.forceMove(m));
+    expect(true, o.opponentMove(m));
+
+    m = o.chooseMove();
+    print("opponent: " + m);
+    expect(true, p.opponentMove(m));
+    expect(true, o.forceMove(m));
+
+    m = p.chooseMove();
+    print("me: " + m);
+    expect(true, p.forceMove(m));
+    expect(true, o.opponentMove(m));
+
+    m = o.chooseMove();
+    print("opponent: " + m);
+    expect(true, p.opponentMove(m));
+    expect(true, o.forceMove(m));
+    print(p.board);
   }
 
 }
