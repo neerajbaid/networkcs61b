@@ -104,13 +104,19 @@ public class MachinePlayer extends Player {
     if (!board.hasPiecesLeft(color) && variableSearchDepth > STEP_DEPTH_DROP) {
       variableSearchDepth = searchDepth - STEP_DEPTH_DROP;
     }
-    ScoredMove scoredMove = chooseMoveHelper(color, Board.OPP_WIN, Board.MY_WIN, 1, null);
+    ScoredMove scoredMove = chooseMoveHelper(color, Board.OPP_WIN, Board.MY_WIN, 1);
     Move move = scoredMove.move;
     board.performValidMove(move, color);
     return move;
   }
 
-  private ScoredMove chooseMoveHelper(int side, int alpha, int beta, int depth, Move appliedMove) {
+  /**
+    * This helper method is where minimax actually occurs.
+    * "side" keeps track of the player from whose perspective minimax is operating
+    * depth represents the current depth (1 = considering moves the MachinePlayer can make)
+    * 
+    */
+  private ScoredMove chooseMoveHelper(int side, int alpha, int beta, int depth) {
     DList validMoves = validMoves(side);
 
     if (depth > variableSearchDepth) {
@@ -134,7 +140,7 @@ public class MachinePlayer extends Player {
     for (ListNode node : validMoves) {
       Move move = (Move) node.item();
       board.performValidMove(move, side);
-      replyBest = chooseMoveHelper(Board.flipColor(side), alpha, beta, depth + 1, move);
+      replyBest = chooseMoveHelper(Board.flipColor(side), alpha, beta, depth + 1);
       board.undoMove(move);
       if (side == color && replyBest.score > myBest.score) {
         myBest.move = move;
