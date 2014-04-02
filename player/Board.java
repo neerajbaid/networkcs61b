@@ -4,6 +4,10 @@ import list.*;
 import dict.*;
 import java.util.Arrays; // DEBUGGING PURPOSES ONLY
 
+
+  /**
+    * Class representing a board in the game. Used for all internal state management.
+    */
 public class Board {
   protected static final int WHITE = 1;
   protected static final int BLACK = 0;
@@ -29,8 +33,11 @@ public class Board {
   protected static final int END_INDEX = LENGTH-1;
 
   private Piece[][] board;
-  private DList[] colorPieces; // keeps track of each player's pieces
+  private DList[] colorPieces; // keeps track of Each player's pieces
 
+  /**
+    * Default constructor, initialized empty board.
+    */
   public Board() {
     colorPieces = new DList[] {new DList(), new DList()};
     board = new Piece[LENGTH][LENGTH];

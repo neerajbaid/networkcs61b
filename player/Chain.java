@@ -3,6 +3,10 @@ package player;
 import list.*;
 import dict.*;
 
+
+/**
+  * Class representing a network in the game.
+  */
 public class Chain {
   //The player to whom this network belongs.
   public int color;
