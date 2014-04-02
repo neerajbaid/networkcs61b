@@ -4,6 +4,7 @@ import list.*;
 import dict.*;
 import java.util.Arrays;
 
+<<<<<<< HEAD
 public class Board {
 	private Piece[][] board;
 
