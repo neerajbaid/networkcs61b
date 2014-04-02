@@ -37,7 +37,37 @@ public class MachinePlayer extends Player {
     this.color = color;
     this.oppColor = Board.flipColor(color);
   }
-  
+
+  /**
+    * Returns a DList of all valid moves that the player represented by color (0 or 1)
+    * can take.
+    */
+  public DList validMoves(int color){
+    // find add moves:
+    if (board.hasPiecesLeft(color)) {
+      return validMovesHelper(color, null);
+    }
+
+    // now find step moves:
+    DList myPieces = board.getPieces(color);
+    DList validMoves = new DList();
+    for (ListNode node : myPieces) {
+      Piece piece = (Piece) node.item();
+      board.tempRemove(piece);
+      DList newMoves = validMovesHelper(color, piece);
+      validMoves.extend(newMoves);
+      board.tempRestore(piece);
+    }
+    
+    return validMoves;
+  }
+
+  /**
+    * Helper method for validMoves. Takes in the player's color.
+    * Discovers all possible add moves that can be taken.
+    * Also takes in a Piece representing whether or not we want to return step Moves.
+    * If a piece is passed in that parameter, returns step moves instead of add moves.
+    */
   private DList validMovesHelper (int color, Piece stepPiece) {
     DList moves = new DList();
     for(int x = 0; x < board.LENGTH; x++){
@@ -60,26 +90,6 @@ public class MachinePlayer extends Player {
     return moves;
   }
 
-  public DList validMoves(int color){
-    // find add moves:
-    if (board.hasPiecesLeft(color)) {
-      return validMovesHelper(color, null);
-    }
-
-    // now find step moves:
-    DList myPieces = board.getPieces(color);
-    DList validMoves = new DList();
-    for (ListNode node : myPieces) {
-      Piece piece = (Piece) node.item();
-      board.tempRemove(piece);
-      DList newMoves = validMovesHelper(color, piece);
-      validMoves.extend(newMoves);
-      board.tempRestore(piece);
-    }
-    
-    return validMoves;
-  }
-
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
@@ -87,37 +97,29 @@ public class MachinePlayer extends Player {
     if (!board.hasPiecesLeft(color)) {
       variableSearchDepth = searchDepth - 3;
     }
-    ScoredMove scoredMove = chooseMoveHelper(color, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
+    ScoredMove scoredMove = chooseMoveHelper(color, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, null);
     Move move = scoredMove.move;
     board.performValidMove(move, color);
     return move;
   }
 
-  private ScoredMove chooseMoveHelper(int side, int alpha, int beta, int depth) {
+  private ScoredMove chooseMoveHelper(int side, int alpha, int beta, int depth, Move appliedMove) {
     DList validMoves = validMoves(side);
 
     if (depth >= variableSearchDepth) {
-      int max = 0;
-      Move best = null;
-      for (ListNode node : validMoves) {
-        Move move = (Move) node.item();
-        board.performValidMove(move, side);
-        int score = board.evaluate(color);
-        board.undoMove(move);
-        if (best == null) {
-          best = move;
-          max = score;
-        }
-        if (side == color && score > max) {
-          max = score;
-          best = move;
-        }
-        else if (side == oppColor && score < max) {
-          max = score;
-          best = move;
-        }
+      return new ScoredMove(board.evaluate(color, true) / depth, appliedMove);
+    }
+
+    // check for win
+    else if (depth != 0){
+      int hasWinner = board.evaluate(color, false);
+      hasWinner = hasWinner / depth;
+      if (side == color && hasWinner > 0) {
+        return new ScoredMove(hasWinner, appliedMove);
       }
-      return new ScoredMove(max, best);
+      if (side != color && hasWinner < 0) {
+        return new ScoredMove(hasWinner, appliedMove);
+      }
     }
 
     ScoredMove replyBest;
@@ -131,7 +133,7 @@ public class MachinePlayer extends Player {
     for (ListNode node : validMoves) {
       Move move = (Move) node.item();
       board.performValidMove(move, side);
-      replyBest = chooseMoveHelper(Board.flipColor(side), alpha, beta, depth + 1);
+      replyBest = chooseMoveHelper(Board.flipColor(side), alpha, beta, depth + 1, move);
       board.undoMove(move);
       if (side == color && replyBest.score > myBest.score) {
         myBest.move = move;
