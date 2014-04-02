@@ -378,23 +378,27 @@ public class Board {
   private int[] incrementCoordinateInDirection(int[] coordinate, int direction) {
     int x = coordinate[0];
     int y = coordinate[1];
-    if (direction == DIRECTION_UP)
+    if (direction == DIRECTION_UP) {
       y--;
+    }
     else if (direction == DIRECTION_UP_RIGHT) {
       x++;
       y--;
-    } else if (direction == DIRECTION_RIGHT)
+    } else if (direction == DIRECTION_RIGHT) {
       x++;
+    }
     else if (direction == DIRECTION_DOWN_RIGHT) {
       x++;
       y++;
-    } else if (direction == DIRECTION_DOWN)
+    } else if (direction == DIRECTION_DOWN) {
       y++;
+    }
     else if (direction == DIRECTION_DOWN_LEFT) {
       x--;
       y++;
-    } else if (direction == DIRECTION_LEFT)
+    } else if (direction == DIRECTION_LEFT) {
       x--;
+    }
     else if (direction == DIRECTION_UP_LEFT) {
       x--;
       y--;
@@ -438,15 +442,17 @@ public class Board {
       for (int i = 1; i < END_INDEX; i++) {
         int[] coordinate = { 0, i };
         Piece piece = pieceAtCoordinate(coordinate);
-        if (piece != null)
+        if (piece != null) {
           pieces.insertBack(piece);
+        }
       }
     } else if (color == BLACK) {
       for (int i = 1; i < END_INDEX; i++) {
         int[] coordinate = { i, 0 };
         Piece piece = pieceAtCoordinate(coordinate);
-        if (piece != null)
+        if (piece != null) {
           pieces.insertBack(piece);
+        }
       }
     }
     return pieces;
@@ -465,15 +471,17 @@ public class Board {
       for (int i = 1; i < END_INDEX; i++) {
         int[] coordinate = { END_INDEX, i };
         Piece piece = pieceAtCoordinate(coordinate);
-        if (piece != null)
+        if (piece != null) {
           pieces.insertBack(piece);
+        }
       }
     } else if (color == BLACK) {
       for (int i = 1; i < END_INDEX; i++) {
         int[] coordinate = { i, END_INDEX };
         Piece piece = pieceAtCoordinate(coordinate);
-        if (piece != null)
+        if (piece != null) {
           pieces.insertBack(piece);
+        }
       }
     }
     return pieces;
