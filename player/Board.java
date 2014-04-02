@@ -298,11 +298,16 @@ public class Board {
     * Any completed networks will be added to the DList passed in the networks parameter.
     */
   private void findNetwork(Piece piece, Chain currentNetwork, int prevDirection, DList networks) {
-    if (pieceIsInTargetEndZone(piece, currentNetwork)) {
-      if (currentNetwork.numPieces() >= 6) {
-        networks.insertBack(currentNetwork.copy());
+    if (currentNetwork.numPieces() > 1) {
+      if (pieceIsInSameStartZone(piece, currentNetwork)) {
+        return; //invalid network
       }
-      return;
+      if (isOnValidGoal(piece.x, piece.y, currentNetwork.color)) {
+        if (currentNetwork.numPieces() >= 6) {
+          networks.insertBack(currentNetwork.copy());
+        }
+        return; //invalid network
+      }
     }
 
     for (int direction : DIRECTIONS) {
@@ -325,20 +330,15 @@ public class Board {
     }
   }
 
-  /**
-    * Checks if a piece is in its end zone.
-    * Takes in a Piece piece and a Chain network
-    * The network is used to store which player this is for, and to
-    * check that the network doesn't end in the same endzone where it started.
-    * Returns a boolean
-    */
-  private boolean pieceIsInTargetEndZone(Piece piece, Chain network) {
-    int x = piece.x;
-    int y = piece.y;
+/**
+  * Checks if a piece is in the same endzone as the first piece in a network
+  * Takes in a Piece piece and a Chain network
+  * The network supplies information about the player
+  * The first piece of the network indicates the starting zone of the network
+  * Returns a boolean
+  */
+  private boolean pieceIsInSameStartZone(Piece piece, Chain network) {
     int color = network.color;
-    if (!isOnValidGoal(x, y, color)) {
-      return false;
-    }
     Piece start = network.first();
     if (start == null) {
       return false;
@@ -346,10 +346,10 @@ public class Board {
     int startX = start.x;
     int startY = start.y;
     if (color == WHITE) {
-      return startX != piece.x;
+      return startX == piece.x;
     }
     // black:
-    return startY != piece.y;
+    return startY == piece.y;
   }
 
   /**
@@ -501,7 +501,7 @@ public class Board {
     }
 
     //difference between number of pieces each piece can see from my side and opponent's side
-    return yourScore - otherScore;
+    return (yourScore - otherScore) * 10;
   }
 
   /**
@@ -587,7 +587,7 @@ public class Board {
         }
         x++;
       }
-      result += "\n";
+      result += "\n\n";
     }
     return result;
   }
@@ -698,16 +698,7 @@ public class Board {
     m = new Move(4, 2);
     b.performValidMove(m, BLACK);
     p1 = b.findNextPieceInDirection(p, DIRECTION_UP_RIGHT);
-    expect("[1:4,2]", p1);
-
-    // isintargetEndZone
-    m = new Move(0, 4);
-    b.performValidMove(m, WHITE);
-    print(b);
-    Chain ch = new Chain(WHITE);
-    ch.addPiece(b.board[0][2]);
-    expect(true, b.pieceIsInTargetEndZone(b.board[7][2], ch));
-    expect(false, b.pieceIsInTargetEndZone(b.board[0][4], ch));
+    expect("[0:4,2]", p1);
 
     b = new Board();
 
