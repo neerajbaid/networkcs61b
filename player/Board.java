@@ -2,7 +2,7 @@ package player;
 
 import list.*;
 import dict.*;
-import java.util.Arrays;
+import java.util.Arrays; // DEBUGGING PURPOSES ONLY
 
 public class Board {
   //White and Black
@@ -211,6 +211,14 @@ public class Board {
     }
     board[move.x1][move.y1] = null;
   }
+
+  protected void tempRemove (Piece piece) {
+    board[piece.x][piece.y] = null;
+  }
+  protected void tempRestore (Piece piece) {
+    board[piece.x][piece.y] = piece;
+  }
+
 
   // # pragma mark - Network Finding #iOSProgrammers #ye
   /**
