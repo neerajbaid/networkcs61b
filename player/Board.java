@@ -6,20 +6,20 @@ import java.util.Arrays;
 
 public class Board {
   //White and Black
-  public static final int WHITE = 1;
-  public static final int BLACK = 0;
+  protected static final int WHITE = 1;
+  protected static final int BLACK = 0;
 
   //Directions
-  public static final int DIRECTION_NONE = -1;
-  public static final int DIRECTION_UP = 0;
-  public static final int DIRECTION_UP_RIGHT = 1;
-  public static final int DIRECTION_RIGHT = 2;
-  public static final int DIRECTION_DOWN_RIGHT = 3;
-  public static final int DIRECTION_DOWN = 4;
-  public static final int DIRECTION_DOWN_LEFT = 5;
-  public static final int DIRECTION_LEFT = 6;
-  public static final int DIRECTION_UP_LEFT = 7;
-  public static final int[] DIRECTIONS = { DIRECTION_UP, DIRECTION_UP_RIGHT,
+  private static final int DIRECTION_NONE = -1;
+  private static final int DIRECTION_UP = 0;
+  private static final int DIRECTION_UP_RIGHT = 1;
+  private static final int DIRECTION_RIGHT = 2;
+  private static final int DIRECTION_DOWN_RIGHT = 3;
+  private static final int DIRECTION_DOWN = 4;
+  private static final int DIRECTION_DOWN_LEFT = 5;
+  private static final int DIRECTION_LEFT = 6;
+  private static final int DIRECTION_UP_LEFT = 7;
+  private static final int[] DIRECTIONS = { DIRECTION_UP, DIRECTION_UP_RIGHT,
       DIRECTION_RIGHT, DIRECTION_DOWN_RIGHT, DIRECTION_DOWN,
       DIRECTION_DOWN_LEFT, DIRECTION_LEFT, DIRECTION_UP_LEFT };
 
@@ -27,9 +27,9 @@ public class Board {
   private static final int MY_WIN = 1, OPP_WIN = -1;
 
   //Board Size
-  public static final int MAX_PIECES = 10;
-  public static final int LENGTH = 8;
-  public static final int END_INDEX = LENGTH-1;
+  protected static final int MAX_PIECES = 10;
+  protected static final int LENGTH = 8;
+  protected static final int END_INDEX = LENGTH-1;
 
   private Piece[][] board;
   private DList[] colorPieces;

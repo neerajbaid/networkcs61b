@@ -31,7 +31,7 @@ public class MachinePlayer extends Player {
     this.color = color;
   }
   
-  public Move[] validMoves(int color){
+  private Move[] validMoves(int color){
     DList addMoves = new DList();
 
     for(int i = 0; i < board.LENGTH; i++){
@@ -86,7 +86,7 @@ public class MachinePlayer extends Player {
     return m;
   }
 
-  public Move chooseMoveHelper(int side, int alpha, int beta, int depth) {
+  private Move chooseMoveHelper(int side, int alpha, int beta, int depth) {
     Move myBest, replyBest;
     int myBestScore, replyBestScore;
     if (side == color) {
@@ -176,7 +176,7 @@ public class MachinePlayer extends Player {
   }
   public static void main(String[] args) {
     Move m;
-    int depth = 2;
+    int depth = 1;
     MachinePlayer p = new MachinePlayer(Board.WHITE, depth);
     MachinePlayer o = new MachinePlayer(Board.BLACK, depth);
 
