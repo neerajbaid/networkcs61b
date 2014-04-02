@@ -131,11 +131,6 @@ public class Board {
     return counter >= 2;
   }
 
-
-  public boolean hasPiecesLeft(int color) {
-    return colorPieces[color].length() < MAX_PIECES;
-  }
-
   public boolean isValidAddMove(Move move, int color) {
     int x = move.x1;
     int y = move.y1;
@@ -163,6 +158,10 @@ public class Board {
     return isValidAddMove(move, color);
   }
 
+  public boolean hasPiecesLeft(int color) {
+    return colorPieces[color].length() < MAX_PIECES;
+  }
+
   public DList getPieces(int color) {
     return colorPieces[color];
   }
@@ -181,7 +180,9 @@ public class Board {
     if (move.moveKind == move.STEP) {
       piece = board[move.x2][move.y2];
       board[move.x2][move.y2] = null;
-    } else {
+    }
+    // ADD move:
+    else {
       piece = new Piece(color, move.x1, move.y1);
       colorPieces[color].insertFront(piece);
     }
@@ -204,6 +205,7 @@ public class Board {
       piece.x = move.x2;
       piece.y = move.y2;
     }
+    // ADD move:
     else {
       colorPieces[piece.color].remove(piece);
     }
@@ -558,7 +560,8 @@ public class Board {
     return num;
   }
 
-  // TESTING CODE:
+  // ***** TESTING CODE ******
+  // READERS DO NOT NEED TO READ THE CODE BELOW
 
   public String toString() {
     String result = "";
@@ -618,6 +621,7 @@ public class Board {
 
     m = new Move(3, 6, 1, 5);
     b.performValidMove(m, BLACK);
+    expect(1, b.getPieces(BLACK).length());
     print(b);
 
     b.undoMove(m);
@@ -625,8 +629,10 @@ public class Board {
 
     m = new Move(7, 2);
     b.performValidMove(m, WHITE);
+    expect(1, b.getPieces(WHITE).length());
     print(b);
     b.undoMove(m);
+    expect(0, b.getPieces(WHITE).length());
     print(b);
 
     // isInCluster
@@ -634,6 +640,7 @@ public class Board {
     b.performValidMove(m, WHITE);
     m = new Move(6, 3);
     b.performValidMove(m, WHITE);
+    expect(2, b.getPieces(WHITE).length());
     print(b);
     expect(true, b.isInCluster(7, 3, WHITE));
     expect(true, b.isInCluster(7, 4, WHITE));
