@@ -162,6 +162,19 @@ public class DList extends List {
     return copy;
   }
 
+  public void extend(DList list) {
+    DListNode nodeFront = (DListNode) list.front();
+    DListNode nodeBack = (DListNode) list.back();
+    if (!nodeFront.isValidNode()) {
+      return;
+    }
+    nodeFront.prev = head.prev;
+    head.prev.next = nodeFront;
+    nodeBack.next = head;
+    head.prev = nodeBack;
+    size += list.length();
+  }
+
   /**
    *  toString() returns a String representation of this DList.
    *
@@ -246,7 +259,60 @@ public class DList extends List {
     System.out.println("l after insertFront(10) should be [  10  ]: " + l);
   }
 
-  public static void testNewMethods() {
+  private static void testNewMethods() {
+    // iterator:
+    DList l = new DList();
+    for (ListNode node : l) {
+      System.out.println(node.item()); // nothing
+    }
+    l.insertBack(2);
+    l.insertBack(4);
+    l.insertBack(5);
+    l.insertBack(6);
+    for (ListNode node : l) {
+      System.out.println(node.item()); // 2 4 5 6
+    }
+
+    // extend:
+    l = new DList();
+    l.insertBack(2);
+    l.insertBack(4);
+    l.insertBack(5);
+    l.insertBack(6);
+    DList l2 = new DList();
+    l.extend(l2);
+    System.out.println(l.length()); // 4
+    System.out.println(l); // [2 4 5 6]
+    l2.insertBack(7);
+    l2.insertBack(8);
+    l.extend(l2);
+    System.out.println(l.length()); // 6
+    System.out.println(l); // [2 4 5 6 7 8]
+
+    // copy:
+    l = new DList();
+    l.insertBack(2);
+    l.insertBack(9);
+    l.insertBack(10);
+    l2 = l.copy();
+    l2.front().setItem(7);
+    System.out.println(l); // [2 9 10]
+    System.out.println(l2); // [7 9 10]
+
+    // contains:
+    l2.front().setItem(l);
+    System.out.println(l2.contains(l)); // true
+    l2.front().setItem(4);
+    System.out.println(l2.contains(l)); // false
+    l2.back().setItem(l);
+    System.out.println(l2.contains(l)); // true
+
+    // remove:
+    l2.remove(l);
+    System.out.println(l2.contains(l)); // false
+    l2.remove(9);
+    System.out.println(l2); // 4
+
 
   }
 
@@ -300,5 +366,7 @@ public class DList extends List {
                           );
       System.err.println ("Aborting the testing code.");
     }
+
+    testNewMethods();
   }
 }

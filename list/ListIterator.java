@@ -11,7 +11,7 @@ public class ListIterator implements Iterator<ListNode> {
   }
 
   public boolean hasNext() {
-    return current.isValidNode() && current.next().isValidNode();
+    return current.isValidNode();
   }
 
   public ListNode next() {
