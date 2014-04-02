@@ -137,13 +137,69 @@ Machine player uses the following modules:
 
 
 
-1) Determining whether a move is valid
+
+1) Managing and accessing board's internal state
+  Implemented in class Board. Implemented by Brian.
+
+  /**
+    * Performs a move for a specific player represented by "color"
+    * Warning: this method assumes "move" is valid.
+    * This method updates the board's internal state
+    */
+  protected void performValidMove(Move move, int color)
+
+  /**
+    * Reverses a move performed with performValidMove.
+    * Takes in the Move "move" that is to be reversed.
+    * This method updates the board's internal state
+    */
+  protected void undoMove(Move move)
+
+  /**
+    * Checks if the player represented by int "color" has any more pieces that they can add
+    * This method returns false when a player has added Board.MAX_PIECES = 10 pieces to the board.
+    * Returns boolean
+    */
+  protected boolean hasPiecesLeft(int color)
+
+  /**
+    * Returns a DList containing all of the pieces that a player has on the board.
+    * The player is represented by int "color", which is Board.BLACK or Board.WHITE.
+    */
+  protected DList getPieces(int color)
+
+  /**
+    * Used to temporarily remove a piece from the board.
+    * Warning: this method is only meant for temporarily removing a piece:
+    * the piece must be added back
+    */
+  void tempRemove (Piece piece)
+
+  /**
+    * Used to restore a temporarily removed "piece" to the board
+    * tempRestore should only be used to restore a piece that was removed
+    * with tempRemove
+    */
+  void tempRestore (Piece piece)
+
+  /**
+    * Switches the player color.
+    * The player is represented by int "color", which is Board.BLACK or Board.WHITE.
+    * Returns the opposite color, either Board.BLACK or Board.WHITE.
+    */
+  protected static int flipColor(int color)
+
+
+
+
+
+2) Determining whether a move is valid
   Implemented in class Board. Implemented by Sidd and Brian
 
   /**
     * Checks if a move would be a valid ADD move
     * Even if the move is a STEP move, it is treated as an ADD move.
-    * int "color" represents the color of the player performing the move.
+    * The player performing the move is represented by int "color", which is Board.BLACK or Board.WHITE.
     * Behavior undefined for a malformed move.
     * Returns a boolean
     */
@@ -159,7 +215,7 @@ Machine player uses the following modules:
 
 
 
-2) Generate list of valid moves
+3) Generate list of valid moves
   Implemented in class MachinePlayer. Implemented by Sidd and Brian.
 
   /**
@@ -172,7 +228,7 @@ Machine player uses the following modules:
 
 
 
-3) Finder that finds pieces forming connections with a given piece.
+4) Finder that finds pieces forming connections with a given piece.
   Implemented in class Board. Implemented by Neeraj.
 
   /**
@@ -184,7 +240,7 @@ Machine player uses the following modules:
 
 
 
-4) Finding networks
+5) Finding networks
   Implemented in class Board. Implemented by Neeraj.
 
   /**
@@ -196,7 +252,7 @@ Machine player uses the following modules:
 
 
 
-5) Computing an evaluation score for a board
+6) Computing an evaluation score for a board
   Implemented in class Board. Implemented by Sidd.
 
   /**
@@ -211,7 +267,7 @@ Machine player uses the following modules:
   protected int evaluate(int player, boolean runIntermediate) {
 
 
-6) Minimax tree search for finding the best move
+7) Minimax tree search for finding the best move
   Implemented in class MachinePlayer. Implemented by Brian.
 
   /**

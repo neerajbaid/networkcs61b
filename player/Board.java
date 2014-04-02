@@ -46,15 +46,6 @@ public class Board {
   // CHECKING VALID MOVE
 
   /**
-    * Switches the player color.
-    * @parameter color: int representing current player
-    * @return other player
-    */
-  protected static int flipColor(int color) {
-    return 1-color;
-  }
-
-  /**
     * Checks if x,y coordinates correspond to a valid goal for the player
     * @parameter x: x coord, y: y coord, color: int representing player
     * @return boolean
@@ -191,27 +182,13 @@ public class Board {
     return isValidAddMove(move, color);
   }
 
-  /**
-    * Checks if the player represented by color has any more pieces they can add
-    * Returns boolean
-    */
-  protected boolean hasPiecesLeft(int color) {
-    return colorPieces[color].length() < MAX_PIECES;
-  }
-
-  /**
-    * Returns a DList containing all of the pieces that a player has
-    * Takes in the player's color.
-    */
-  protected DList getPieces(int color) {
-    return colorPieces[color];
-  }
 
   // MANIPULATING BOARD
 
   /**
-    * Performs a move for a specific player represented by color
-    * This method does not and should not check if move is valid.
+    * Performs a move for a specific player represented by "color"
+    * Warning: this method assumes "move" is valid.
+    * This method updates the board's internal state
     */
   protected void performValidMove(Move move, int color) {
     if (move.moveKind == move.QUIT) {
@@ -233,8 +210,9 @@ public class Board {
   }
 
   /**
-    * Reverses a move.
-    * Takes in the Move that is to be reversed.
+    * Reverses a move performed with performValidMove.
+    * Takes in the Move "move" that is to be reversed.
+    * This method updates the board's internal state
     */
   protected void undoMove(Move move) {
     if (move.moveKind == move.QUIT) {
@@ -254,22 +232,47 @@ public class Board {
   }
 
   /**
-    * Used to remove a piece from the board.
-    * tempRemove is named such to indicate that it is intended
-    * to be used only for temporarily removing a piece that will be added back
-    * later
+    * Checks if the player represented by int "color" has any more pieces that they can add
+    * This method returns false when a player has added Board.MAX_PIECES = 10 pieces to the board.
+    * Returns boolean
+    */
+  protected boolean hasPiecesLeft(int color) {
+    return colorPieces[color].length() < MAX_PIECES;
+  }
+
+  /**
+    * Returns a DList containing all of the pieces that a player has on the board.
+    * The player is represented by int "color", which is Board.BLACK or Board.WHITE.
+    */
+  protected DList getPieces(int color) {
+    return colorPieces[color];
+  }
+
+  /**
+    * Used to temporarily remove a piece from the board.
+    * Warning: this method is only meant for temporarily removing a piece:
+    * the piece must be added back
     */
   void tempRemove (Piece piece) {
     board[piece.x][piece.y] = null;
   }
+
   /**
-    * Used to set a piece on the board
-    * tempRestore is named such to indicate that it is intended
-    * to be used only for adding back a piece that was removed 
+    * Used to restore a temporarily removed "piece" to the board
+    * tempRestore should only be used to restore a piece that was removed
     * with tempRemove
     */
   void tempRestore (Piece piece) {
     board[piece.x][piece.y] = piece;
+  }
+
+  /**
+    * Switches the player color.
+    * The player is represented by int "color", which is Board.BLACK or Board.WHITE.
+    * Returns the opposite color, either Board.BLACK or Board.WHITE.
+    */
+  protected static int flipColor(int color) {
+    return 1-color;
   }
 
 
