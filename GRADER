@@ -28,11 +28,10 @@ Did you successfully implement game tree search?  Did you successfully
 implement alpha-beta pruning?  Are there any limitations on it?  What is the
 default number of search levels set by the one-parameter MachinePlayer
 constructor (or is it a variable-depth search)?
-We believe we successfully implemented game tree search with alpha-beta pruning.
-Some limitations include insufficient "resolution" on the evaluation scores because
+Yes, we successfully implemented game tree search with alpha-beta pruning.
+Some limitations include less-than-ideal "resolution" on the evaluation scores because
 there was a broad range of possible scores. The default number of search levels is 4.
-Variable depth search is used such that if there are step moves, the number of search levels
-is 2.
+Variable depth search is used such that if there are step moves, the search depth becomes 2.
 
 Describe your board evaluation function in some detail.
 The board evaluation function first checks for win conditions.
@@ -40,7 +39,8 @@ If the player has won, Integer.MAX_VALUE is returned.
 If the player has lost, Integer.MIN_VALUE is returned.
 Otherwise, an intermediate score is returned.
 The intermediate score is the sum of the current player's pairs minus
-the sum of the opposing player's pairs. A pair is two pieces (of the same player)
+the sum of the opposing player's pairs, scaled by a constant factor.
+A pair is two pieces (of the same player)
 that form a connection.
 
 Does your MachinePlayer use any special method of choosing the first few moves?
@@ -73,57 +73,139 @@ sure to modify this file to reflect these changes before you submit your
 project.  Your design of classes and interfaces will be worth 10% of your
 grade.
 
-Classes:
-  Player
+The program's classes are as follows:
+In package "list":
+  DList
+  DListNode
+  InvalidNodeException
+  List
+  ListIterator
+  ListNode
+In package "player":
+  Board
+  Chain
   MachinePlayer
   Move
-  Board
+  Piece
+  Player
+  ScoredMove
 
-Modules:
+Machine player uses the following modules:
 
-1)  Determining whether a move is valid
-      implemented in Board
-2)  Generate list of valid moves
-      implemented in MachinePlayer
-3)  Adjacent chip finder that finds chips adjacent to a chip
-      implemented in Board
-4)  Finding networks
-      implemented in Board
-5)  Board evaluation
-      implemented in Board
-6)  Minimax tree search
-      implemented in MachinePlayer
+0) Comprehensive linked list data structure.
+  Implemented in package "list" (all of the classes there). Implemented by Brian.
+  Method prototypes are identical to those found in HW5: http://www.cs.berkeley.edu/~jrs/61b/hw/hw5/.
+  
+  Except:
 
-1. Valid Move
-class Board
-// Returns whether the move is legal in the current board
-public boolean isValidMove(Move move);
+  DList:
+    /**
+     *  Removes an object from the list
+     *  Achieved by removing the list node containing that object.
+     */
+    public void remove(Object item)
 
-2. List of valid moves
-class MachinePlayer
-// Returns an array of valid Moves in the specified board
-private Moves[] validMoves(Board board);
+    /**
+     *  Returns an iterator object for this list.
+     *  The object is a ListIterator
+     *  Used for for-in loops.
+     */
+    public Iterator<ListNode> iterator()
 
-3. Adjacent chip finder
-class Board
-// Find line-of-sight adjacent chips to the specified x, y position chip in the board.
-private int[][][] adjacentChips(int x, int y);
+    /**
+     *  Returns true if obj is contained in any of the nodes in this list
+     *  False otherwise.
+     */
+    public boolean contains(Object obj)
 
-4. Finding networks
-class Board
-// Finds all/any valid networks
-// Return value is an array of hashes, outlined below.
-// [{'name' => 'b', 'moves' => '[[x,y],[x,y] ... ]'}, {'name' => 'b', 'moves' => '[[x,y],[x,y] ... ]'}, ... ]
-public int[][] findNetworks();
+    /**
+     *  Returns a shallow copy of this DList (nodes are duplicated, not items)
+     */
+    public DList copy()
 
-5. Board evaluation
-class Board
-// Returns a score for the current board, and the specified player.
-public int evaluate(int player);
+    /**
+     *  Appends the nodes of list to the end of this DList.
+     *  The nodes are not copied/duplicated.
+     */
+    public void extend(DList list)
 
-6. Tree search
-class MachinePlayer
-// Returns a new move by "this" player.  Internally records the move (updates
-// the internal game board) as a move by "this" player.
-// The move takes advantage of alpha-beta pruning with a tree search and references the search depth.
-public Move chooseMove(); 
+  ListIterator implements the standard Java Iterator<ListNode> interface exactly.
+
+
+
+1) Determining whether a move is valid
+  Implemented in class Board. Implemented by Sidd and Brian
+
+  /**
+    * Checks if a move by the player for color
+    * would be a valid add move (even if move is a step move)
+    * Returns boolean
+    */
+  protected boolean isValidAddMove(Move move, int color)
+
+  /**
+    * Checks if a move for the player represented by color is valid
+    * Returns boolean
+    */
+  protected boolean isValidMove(Move move, int color) {
+    if (move.moveKind == Move.ADD && !hasPiecesLeft(color)) {
+      return false;
+    }
+    return isValidAddMove(move, color);
+  }
+
+
+
+2) Generate list of valid moves
+  Implemented in class MachinePlayer. Implemented by Sidd and Brian.
+
+  /**
+    * Returns a DList of all valid moves that the player represented by color (0 or 1)
+    * can take.
+    */
+  public DList validMoves(int color)
+
+
+
+3) Finder that finds pieces forming connections with a given piece.
+  Implemented in class Board. Implemented by Neeraj.
+
+  /**
+    * Finds the next Piece piece of the same color in specified direction.
+    * Returns a Piece
+    */
+  private Piece findNextPieceInDirection(Piece piece, int direction) {
+
+
+
+4) Finding networks
+  Implemented in class Board. Implemented by Neeraj.
+
+  /**
+  * Finds all the networks currently on the board of a certain player.
+  * player is represented by color.
+  * Returns a DList of all the networks for that player.
+  */
+  public DList findAllNetworks(int color)
+
+
+
+5) Computing an evaluation score for a board
+  Implemented in class Board. Implemented by Sidd.
+
+  /**
+  * Returns an evaluation score for the current board.
+  * Takes in a player's color and a boolean runIntermediate.
+  * runIntermediate determines whether or not the functon tries to arrive at an intermediate score 
+  * if no wins are found. 
+  * Returns an integer ranging from Integer.MIN_VALUE to Integer.MAX_VALUE
+  */
+  protected int evaluate(int player, boolean runIntermediate) {
+
+
+6) Minimax tree search for finding the best move
+  Implemented in class MachinePlayer. Implemented by Brian.
+
+  // Returns a new move by "this" player.  Internally records the move (updates
+  // the internal game board) as a move by "this" player.
+  public Move chooseMove() {
