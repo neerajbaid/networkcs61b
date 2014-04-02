@@ -17,6 +17,7 @@ public class MachinePlayer extends Player {
   private int searchDepth;
   private int variableSearchDepth;
   private static final int DEFAULT_DEPTH = 4;
+  private static final int STEP_DEPTH_DROP = 2;
 
   // Creates a machine player with the given color.  Color is either 0 (black)
   // or 1 (white).  (White has the first move.)
@@ -94,10 +95,10 @@ public class MachinePlayer extends Player {
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
     // lower the depth for step pieces
-    if (!board.hasPiecesLeft(color)) {
-      variableSearchDepth = searchDepth - 2;
+    if (!board.hasPiecesLeft(color) && variableSearchDepth > STEP_DEPTH_DROP) {
+      variableSearchDepth = searchDepth - STEP_DEPTH_DROP;
     }
-    ScoredMove scoredMove = chooseMoveHelper(color, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, null);
+    ScoredMove scoredMove = chooseMoveHelper(color, Integer.MIN_VALUE, Integer.MAX_VALUE, 1, null);
     Move move = scoredMove.move;
     board.performValidMove(move, color);
     return move;
@@ -106,20 +107,14 @@ public class MachinePlayer extends Player {
   private ScoredMove chooseMoveHelper(int side, int alpha, int beta, int depth, Move appliedMove) {
     DList validMoves = validMoves(side);
 
-    if (depth >= variableSearchDepth) {
-      return new ScoredMove(board.evaluate(color, true) / depth, appliedMove);
+    if (depth > variableSearchDepth) {
+      return new ScoredMove(board.evaluate(color, true) / depth, (Move) validMoves.front().item());
     }
 
     // check for win
-    else if (depth != 0){
-      int hasWinner = board.evaluate(color, false);
-      hasWinner = hasWinner / depth;
-      if (side == color && hasWinner > 0) {
-        return new ScoredMove(hasWinner, appliedMove);
-      }
-      if (side != color && hasWinner < 0) {
-        return new ScoredMove(hasWinner, appliedMove);
-      }
+    int possibleWin = board.evaluate(color, false);
+    if (possibleWin != 0) {
+      return new ScoredMove(possibleWin / depth, (Move) validMoves.front().item());
     }
 
     ScoredMove replyBest;
@@ -196,7 +191,7 @@ public class MachinePlayer extends Player {
     MachinePlayer o = new MachinePlayer(Board.BLACK, depth);
 
     // Test validMoves
-    // print(p.board);
+    print(p.board);
     DList validMoves = p.validMoves(Board.WHITE);
     expect(8*6, validMoves.length()); // 6*8 = 48 possible add moves on empty board
     print(validMoves);
@@ -269,6 +264,22 @@ public class MachinePlayer extends Player {
     print("opponent: " + m);
     expect(true, p.opponentMove(m));
     print(p.board);
+
+
+    // Debugging of test cases
+    p = new MachinePlayer(Board.WHITE, depth);
+
+    p.forceMove(new Move(0,2));
+    p.forceMove(new Move(4,3));
+    p.forceMove(new Move(1,6));
+    p.forceMove(new Move(4,6));
+    p.opponentMove(new Move(1,0));
+    p.opponentMove(new Move(1,2));
+    p.opponentMove(new Move(6,2));
+    p.opponentMove(new Move(6,7));
+    print(p.board);
+    m = p.chooseMove();
+    expect(new Move(1,3), m);
   }
 
 }
