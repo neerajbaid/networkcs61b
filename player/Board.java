@@ -195,8 +195,13 @@ public class Board
       Chain completed = currentNetwork.copy();
       System.out.println("complete network one: " + currentNetwork.toString());
       System.out.println("complete network two: " + completed.toString());
-      current_networks.insertFront(completed);
-      return completed;
+      if (completed.numPieces() >= 6)
+      {
+        current_networks.insertFront(completed);
+        return completed;
+      }
+      else
+        return null;
     }
     for (int direction : DIRECTIONS)
     {

@@ -23,6 +23,11 @@ public class Chain
     pieces.insertBack(piece);
   }
 
+  public int numPieces()
+  {
+    return pieces.length();
+  }
+
   public DList getPieces(){
     return pieces;
   }
