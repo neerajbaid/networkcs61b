@@ -5,11 +5,9 @@ import dict.*;
 import java.util.Arrays; // DEBUGGING PURPOSES ONLY
 
 public class Board {
-  //White and Black
   protected static final int WHITE = 1;
   protected static final int BLACK = 0;
 
-  //Directions
   private static final int DIRECTION_NONE = -1;
   private static final int DIRECTION_UP = 0;
   private static final int DIRECTION_UP_RIGHT = 1;
@@ -25,15 +23,13 @@ public class Board {
 
   private static final int MY_WIN = Integer.MAX_VALUE, OPP_WIN = Integer.MIN_VALUE;
 
-  //Board Size
+  //Board Limits
   protected static final int MAX_PIECES = 10;
   protected static final int LENGTH = 8;
   protected static final int END_INDEX = LENGTH-1;
 
   private Piece[][] board;
-  private DList[] colorPieces;
-  // private int whitePieces = MAX_PIECES;
-  // private int blackPieces = MAX_PIECES;
+  private DList[] colorPieces; // keeps track of each player's pieces
 
   public Board() {
     colorPieces = new DList[] {new DList(), new DList()};
@@ -44,15 +40,17 @@ public class Board {
 
   /**
     * Switches the player color.
-    * @parameter color: the integer representing the current player
-    * @return           the other player
+    * @parameter color: int representing current player
+    * @return other player
     */
   protected static int flipColor(int color) {
     return 1-color;
   }
 
   /**
-    * Checks if a certain coordinate is in its goal zone.
+    * Checks if x,y coordinates correspond to a valid goal for the player
+    * @parameter x: x coord, y: y coord, color: int representing player
+    * @return boolean
     */
   private boolean isOnValidGoal(int x, int y, int color) {
     if (isInCorner(x, y)) {
@@ -66,14 +64,16 @@ public class Board {
   }
 
   /**
-    * Checks if a certain coordinate is in the wrong goal.
+    * Checks if x,y coordinates correspond to the opposite player's goal
+    * @parameter x: x coord, y: y coord, color: int representing player
+    * @return boolean representing whether coordinates are on wrong goal
     */
   private boolean isOnInvalidGoal(int x, int y, int color) {
     return isOnValidGoal(x, y, flipColor(color));
   }
 
   /**
-    * Checks if a coordinate is in the corner of the board.
+    * Checks if x,y coordinates are on a corner space, returns boolean
     */
   private boolean isInCorner(int x, int y) {
     if (x == 0 || y == 0 || x == END_INDEX || y == END_INDEX) {
@@ -84,7 +84,9 @@ public class Board {
   }
 
   /**
-    *
+    * Helper method for isInCluster. Takes in x, y coordinates and the player's color
+    * Checks whether the player has pieces surrounding those x,y coordinates.
+    * Returns true or false.
     */
   private boolean isInChainedCluster(int x, int y, int color) {
     for (int i = -1; i < 2; i++) {
@@ -105,7 +107,9 @@ public class Board {
   }
 
   /**
-    *
+    * Checks for clusters that might be formed by placing a piece of int color
+    * at the x, y coordinates
+    * Returns boolean
     */
   private boolean isInCluster(int x, int y, int color) {
     //count how many pieces in vicinity
@@ -130,6 +134,11 @@ public class Board {
     return counter >= 2;
   }
 
+  /**
+    * Checks if a move by the player for color
+    * would be a valid add move (even if move is a step move)
+    * Returns boolean
+    */
   public boolean isValidAddMove(Move move, int color) {
     int x = move.x1;
     int y = move.y1;
@@ -160,31 +169,39 @@ public class Board {
   }
 
   /**
-    * Checks if a certain move by a specific player is valid on the Board. Adheres
-    *   to all the rules outlined in the readme.
+    * Checks if a move for the player represented by color is valid
+    * Returns boolean
     */
-  public boolean isValidMove(Move move, int color){
+  protected boolean isValidMove(Move move, int color){
     if (move.moveKind == Move.ADD && !hasPiecesLeft(color)) {
       return false;
     }
     return isValidAddMove(move, color);
   }
 
-  public boolean hasPiecesLeft(int color) {
+  /**
+    * Checks if the player represented by color has any more pieces they can add
+    * Returns boolean
+    */
+  protected boolean hasPiecesLeft(int color) {
     return colorPieces[color].length() < MAX_PIECES;
   }
 
-  public DList getPieces(int color) {
+  /**
+    * Returns a DList containing all of the pieces that a player has
+    * Takes in the player's color.
+    */
+  protected DList getPieces(int color) {
     return colorPieces[color];
   }
 
   // MANIPULATING BOARD
 
   /**
-    * Performs a move for a specific player.
-    * @parameter move:  Must be a valid move.
+    * Performs a move for a specific player represented by color
+    * This method does not and should not check if move is valid.
     */
-  public void performValidMove(Move move, int color) {
+  protected void performValidMove(Move move, int color) {
     if (move.moveKind == move.QUIT) {
       return;
     }
@@ -205,9 +222,9 @@ public class Board {
 
   /**
     * Reverses a move.
-    * @parameter move:  The Move that is to be reversed.
+    * Takes in the Move that is to be reversed.
     */
-  public void undoMove(Move move) {
+  protected void undoMove(Move move) {
     if (move.moveKind == move.QUIT) {
       return;
     }
@@ -224,37 +241,41 @@ public class Board {
     board[move.x1][move.y1] = null;
   }
 
-  protected void tempRemove (Piece piece) {
+  /**
+    * Used to remove a piece from the board.
+    * tempRemove is named such to indicate that it is intended
+    * to be used only for temporarily removing a piece that will be added back
+    * later
+    */
+  void tempRemove (Piece piece) {
     board[piece.x][piece.y] = null;
   }
-  protected void tempRestore (Piece piece) {
+  /**
+    * Used to set a piece on the board
+    * tempRestore is named such to indicate that it is intended
+    * to be used only for adding back a piece that was removed 
+    * with tempRemove
+    */
+  void tempRestore (Piece piece) {
     board[piece.x][piece.y] = piece;
   }
 
 
-  // # pragma mark - Network Finding #iOSProgrammers #ye
   /**
     * Finds all the networks currently on the board of a certain player.
-    * @return:  Returns all the networks that have been found.
+    * player is represented by color.
+    * Returns a DList of all the networks for that player.
     */
   public DList findAllNetworks(int color)
   {
     DList beginningZonePieces = beginningZonePieces(color);
-    // System.out.println("beginning zone: " + beginningZonePieces.toString());
-    // System.out.println("first beginning piece: " + beginningZonePieces.front().item().toString());
     DList networks = new DList();
 
     for (ListNode pieceNode : beginningZonePieces) {
       Piece piece = (Piece) pieceNode.item();
-      // System.out.println("starting piece: " + piece);
       Chain beginning = new Chain(color);
       beginning.addPiece(piece);
-      // System.out.println("starting chain: " + beginning.toString());
       findNetwork(piece, beginning, DIRECTION_NONE, networks);
-      // if (network == null)
-        // System.out.println("returned completed network, network is null");
-      // else
-        // System.out.println("returned completed network, network is not null");
     }
     return networks;
   }
@@ -266,61 +287,46 @@ public class Board {
     * @parameter currentNetwork: The Chain currently being constructed.
     * @parameter prevDirection:  The direction from which the last piece was gained.
     *                              This is so that we cannot have more than 2 pieces
-    *                              in a line, as specified in the readme.
+    *                              in a line.
     * @parameter networks:       A DList of all the networks that have already been found.
+    * Any completed networks will be added to the DList passed in the networks parameter.
     */
-  public void findNetwork(Piece piece, Chain currentNetwork, int prevDirection, DList networks)
-  {
-    if (pieceIsInTargetEndZone(piece, currentNetwork))
-    {
-      // System.out.println("piece is in target end zone");
-      // System.out.println("complete network one: " + currentNetwork.toString());
-      // System.out.println("complete network two: " + completed.toString());
-      if (currentNetwork.numPieces() >= 6)
-      {
+  private void findNetwork(Piece piece, Chain currentNetwork, int prevDirection, DList networks) {
+    if (pieceIsInTargetEndZone(piece, currentNetwork)) {
+      if (currentNetwork.numPieces() >= 6) {
         networks.insertBack(currentNetwork.copy());
       }
       return;
     }
 
-    for (int direction : DIRECTIONS)
-    {
+    for (int direction : DIRECTIONS) {
       Piece nextPiece = findNextPieceInDirection(piece, direction);
       if (direction == prevDirection) {
         continue;
       }
-      if (nextPiece == null)
-      {
-        // System.out.println("next piece is null");
+      if (nextPiece == null) {
         continue;
       }
-      else if (currentNetwork.contains(nextPiece))
-      {
-        // System.out.println("network contains piece");
+      if (currentNetwork.contains(nextPiece)) {
         continue;
       }
-      else if (nextPiece.color != currentNetwork.color)
-      {
-        // System.out.println("piece of opposite color blocking");
+      if (nextPiece.color != currentNetwork.color) {
         continue;
       }
-      else
-      {
-        // System.out.println("current network before copy: " + currentNetwork.toString());
-        Chain next = currentNetwork.copy();
-        // System.out.println("current network before adding: " + next.toString());
-        // System.out.println("next piece: " + nextPiece.toString());
-        next.addPiece(nextPiece);
-        // System.out.println("current network after adding: " + next.toString());
-        findNetwork(nextPiece, next, direction, networks);
-      }
+      Chain next = currentNetwork.copy();
+      next.addPiece(nextPiece);
+      findNetwork(nextPiece, next, direction, networks);
     }
   }
 
   /**
     * Checks if a piece is in its end zone.
+    * Takes in a Piece piece and a Chain network
+    * The network is used to store which player this is for, and to
+    * check that the network doesn't end in the same endzone where it started.
+    * Returns a boolean
     */
-  public boolean pieceIsInTargetEndZone(Piece piece, Chain network) {
+  private boolean pieceIsInTargetEndZone(Piece piece, Chain network) {
     int x = piece.x;
     int y = piece.y;
     int color = network.color;
@@ -341,30 +347,29 @@ public class Board {
   }
 
   /**
-    * Finds the next Piece of the same color in direction.
+    * Finds the next Piece piece of the same color in specified direction.
+    * Returns a Piece
     */
-  public Piece findNextPieceInDirection(Piece piece, int direction)
-  {
+  private Piece findNextPieceInDirection(Piece piece, int direction) {
     int[] pieceCoordinate = new int[] {piece.x, piece.y};
-    // System.out.println("initial coordinate: " + pieceCoordinate[0] + " " + pieceCoordinate[1] + " direction: " + direction);
     int[] coordinate = incrementCoordinateInDirection(pieceCoordinate, direction);
-    // System.out.println("incremented coordinate: " + coordinate[0] + " " + coordinate[1]);
-    while (containsCoordinate(coordinate))
-    {
+    while (containsCoordinate(coordinate)) {
       Piece next = pieceAtCoordinate(coordinate);
       if (next != null) {
         return next;
       }
       coordinate = incrementCoordinateInDirection(coordinate, direction);
-      // System.out.println("incremented coordinate: " + coordinate[0] + " " + coordinate[1]);
     }
     return null;
   }
 
   /**
     *  Returns the next coordinate in direction.
+    * Takes in an array of two ints, which represents an [x,y] coordinate pair
+    * Takes in a direction.
+    * Returns an array of two ints, which represents an [x,y] coordinate pair
     */
-  public int[] incrementCoordinateInDirection(int[] coordinate, int direction) {
+  private int[] incrementCoordinateInDirection(int[] coordinate, int direction) {
     int x = coordinate[0];
     int y = coordinate[1];
     if (direction == DIRECTION_UP)
@@ -393,21 +398,22 @@ public class Board {
     return coordinate;
   }
 
-  // # pragma mark - Utility Methods #iOSProgrammers
 
   /**
     *  Checks if coordinate is on the board.
+    *  Coordinate is an int[] representing an [x,y] coordinate pair
+    *  Returns a boolean
     */
-  public boolean containsCoordinate(int[] coordinate) {
+  private boolean containsCoordinate(int[] coordinate) {
     int x = coordinate[0];
     int y = coordinate[1];
     return (x < LENGTH && x >= 0 && y < LENGTH && y >= 0);
   }
 
   /**
-    *  Returns the piece at coordinate.
+    *  Returns the Piece at an int[] coordinate that represents an [x,y] coordinate pair
     */
-  public Piece pieceAtCoordinate(int[] coordinate) {
+  private Piece pieceAtCoordinate(int[] coordinate) {
     int x = coordinate[0];
     int y = coordinate[1];
     return board[x][y];
@@ -415,10 +421,12 @@ public class Board {
 
   /**
     *  Gets all the pieces in a player's beginning zone. One of the zones has been
-    *    indicated beginning and one end simply for the purposes of network finding
-    *    since networks are direction agnostic.
+    *   arbitrarily designated as beginning and the other zone as the end
+    *   simply for the purposes of network finding
+    *   since networks are direction agnostic.
+    * Returns a DList of the pieces.
     */
-  public DList beginningZonePieces(int color) {
+  private DList beginningZonePieces(int color) {
     DList pieces = new DList();
     if (color == WHITE) {
       for (int i = 1; i < END_INDEX; i++) {
@@ -440,10 +448,12 @@ public class Board {
 
   /**
     *  Gets all the pieces in a player's end zone. One of the zones has been
-    *    indicated beginning and one end simply for the purposes of network finding
+    *    indicated beginning and one as end simply for the purposes of network finding
     *    since networks are direction agnostic.
+    * Takes in the player's color.
+    * Returns a DList of the pieces.
     */
-  public DList endZonePieces(int color) {
+  private DList endZonePieces(int color) {
     DList pieces = new DList();
     if (color == WHITE) {
       for (int i = 1; i < END_INDEX; i++) {
@@ -463,7 +473,11 @@ public class Board {
     return pieces;
   }
 
-  //calculates one half of the intermediate score
+  /**
+    *  Helper function for evaluate that calculates an intermediate score for a board.
+    * Takes in a player's color to determine who to score the board for.
+    * Returns an integer ranging from Integer.MIN_VALUE to Integer.MAX_VALUE
+    */
   private int intermediate (int player) {
     DList playerPieces = getPieces(player);
     DList opponentPieces = getPieces(flipColor(player));
@@ -485,14 +499,16 @@ public class Board {
   }
 
   /**
-    * Evaluates the board based on the intermediate score and whether or not
-    *  there is a network completed.
+    * Returns an evaluation score for the current board.
+    * Takes in a player's color and a boolean runIntermediate.
+    * runIntermediate determines whether or not the functon tries to arrive at an intermediate score 
+    * if no wins are found. 
+    * Returns an integer ranging from Integer.MIN_VALUE to Integer.MAX_VALUE
     */
-  public int evaluate(int player) {
+  public int evaluate(int player, boolean runIntermediate) {
 
     //find if any network reaches goal, if so then return my win
     DList networks = findAllNetworks(player);
-    boolean reachesGoal = false;
     int myPlacedPieces = 0;
     
     //look at all networks and determine whether pieces are at opposite goals
@@ -514,7 +530,6 @@ public class Board {
 
     player = flipColor(player);
     networks = findAllNetworks(player);
-    reachesGoal = false;
     int otherPlacedPieces = 0;
 
     //look at all networks and determine whether pieces are at opposite goals 
@@ -531,7 +546,10 @@ public class Board {
       }
     }
     //if neither opponent has a sure win, then calculate an intermediate score and sum it with a score based on if I can add or set
-    return intermediate(flipColor(player)) + 5 * ((myPlacedPieces <= 10) ? 1 : 0);
+    if (runIntermediate) {
+      return intermediate(flipColor(player)) + 5 * ((myPlacedPieces <= 10) ? 1 : 0);
+    }
+    return 0;
   }
 
   /**
@@ -700,6 +718,6 @@ public class Board {
     b.performValidMove(new Move(7, 5), WHITE);
     b.performValidMove(new Move(1, 3), BLACK);
     print(b);
-    print("eval " + b.evaluate(0));
+    print("eval " + b.evaluate(0, true));
   }
 }
