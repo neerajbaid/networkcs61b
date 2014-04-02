@@ -515,7 +515,6 @@ public class Board {
 
     //find if any network reaches goal, if so then return my win
     DList networks = findAllNetworks(player);
-    int myPlacedPieces = 0;
     
     //look at all networks and determine whether pieces are at opposite goals
     for (ListNode current : networks) {
@@ -525,9 +524,6 @@ public class Board {
       Piece front = (Piece) pieces.front().item();
       Piece back = (Piece) pieces.back().item();
       
-      //count my placed pieces to determine whether I need to add or set
-      myPlacedPieces += pieces.length();
-
       if (this.isOnValidGoal(front.x, front.y, player)
           && this.isOnValidGoal(back.x, back.y, player)) {
         return MY_WIN;
@@ -553,7 +549,7 @@ public class Board {
     }
     //if neither opponent has a sure win, then calculate an intermediate score and sum it with a score based on if I can add or set
     if (runIntermediate) {
-      return intermediate(flipColor(player)) + 5 * ((myPlacedPieces <= 10) ? 1 : 0);
+      return intermediate(flipColor(player));
     }
     return 0;
   }
