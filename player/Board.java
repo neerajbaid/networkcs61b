@@ -8,8 +8,8 @@ public class Board {
   private Piece[][] board;
 
   //White and Black
-  public static final int WHITE = 0;
-  public static final int BLACK = 1;
+  public static final int WHITE = 1;
+  public static final int BLACK = 0;
 
   //Directions
   public static final int DIRECTION_NONE = -1;

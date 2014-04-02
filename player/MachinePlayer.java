@@ -13,12 +13,13 @@ public class MachinePlayer extends Player {
   private Board board;
   private int color;
   private int searchDepth;
+  private static final int DEFAULT_DEPTH = 2;
 
   // Creates a machine player with the given color.  Color is either 0 (black)
   // or 1 (white).  (White has the first move.)
   public MachinePlayer(int color) {
     board = new Board();
-    searchDepth = 3; // default
+    searchDepth = DEFAULT_DEPTH;
     this.color = color;
   }
 
@@ -55,7 +56,7 @@ public class MachinePlayer extends Player {
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
-    return chooseMoveHelper(color, -Integer.MAX_VALUE, Integer.MAX_VALUE, searchDepth);
+    return chooseMoveHelper(color, -Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
   }
 
   public Move chooseMoveHelper(int side, int alpha, int beta, int depth) {
@@ -148,10 +149,51 @@ public class MachinePlayer extends Player {
   }
   public static void main(String[] args) {
     Move m;
-    MachinePlayer p = new MachinePlayer(Board.WHITE, 1);
-    m = p.chooseMove();
-    print(m);
+    int depth = 2;
+    MachinePlayer p = new MachinePlayer(Board.WHITE, depth);
+    MachinePlayer o = new MachinePlayer(Board.BLACK, depth);
 
+    m = p.chooseMove();
+    print("me: " + m);
+    expect(true, p.forceMove(m));
+    expect(true, o.opponentMove(m));
+
+    m = o.chooseMove();
+    print("opponent: " + m);
+    expect(true, p.opponentMove(m));
+    expect(true, o.forceMove(m));
+
+    m = p.chooseMove();
+    print("me: " + m);
+    expect(true, p.forceMove(m));
+    expect(true, o.opponentMove(m));
+
+    m = o.chooseMove();
+    print("opponent: " + m);
+    expect(true, p.opponentMove(m));
+    expect(true, o.forceMove(m));
+    print(p.board);
+
+    m = p.chooseMove();
+    print("me: " + m);
+    expect(true, p.forceMove(m));
+    expect(true, o.opponentMove(m));
+
+    m = o.chooseMove();
+    print("opponent: " + m);
+    expect(true, p.opponentMove(m));
+    expect(true, o.forceMove(m));
+
+    m = p.chooseMove();
+    print("me: " + m);
+    expect(true, p.forceMove(m));
+    expect(true, o.opponentMove(m));
+
+    m = o.chooseMove();
+    print("opponent: " + m);
+    expect(true, p.opponentMove(m));
+    expect(true, o.forceMove(m));
+    print(p.board);
   }
 
 }
