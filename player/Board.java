@@ -5,8 +5,6 @@ import dict.*;
 import java.util.Arrays;
 
 public class Board {
-  private Piece[][] board;
-
   //White and Black
   public static final int WHITE = 1;
   public static final int BLACK = 0;
@@ -29,10 +27,17 @@ public class Board {
   private static final int MY_WIN = 1, OPP_WIN = -1;
 
   //Board Size
+  public static final int MAX_PIECES = 10;
   public static final int LENGTH = 8;
   public static final int END_INDEX = LENGTH-1;
 
+  private Piece[][] board;
+  private DList[] colorPieces;
+  // private int whitePieces = MAX_PIECES;
+  // private int blackPieces = MAX_PIECES;
+
   public Board() {
+    colorPieces = {new DList(), new DList()};
     board = new Piece[LENGTH][LENGTH];
   }
 
@@ -126,11 +131,12 @@ public class Board {
     return counter >= 2;
   }
 
-  /**
-    * Checks if a certain move by a specific player is valid on the Board. Adheres
-    *   to all the rules outlined in the readme.
-    */
-  public boolean isValidMove(Move move, int color){
+
+  public boolean hasPiecesLeft(int color) {
+    return colorPieces[color].length() < MAX_PIECES;
+  }
+
+  public boolean isValidAddMove(Move move, int color) {
     int x = move.x1;
     int y = move.y1;
     if (isInCorner(x, y)) {
@@ -144,6 +150,21 @@ public class Board {
       return false;
     }
     return !isInCluster(move.x1, move.y1, color);
+  }
+
+  /**
+    * Checks if a certain move by a specific player is valid on the Board. Adheres
+    *   to all the rules outlined in the readme.
+    */
+  public boolean isValidMove(Move move, int color){
+    if (move.moveKind == Move.ADD && !hasPiecesLeft(color)) {
+      return false;
+    }
+    return isValidAddMove(move, color);
+  }
+
+  public DList getPieces(int color) {
+    return colorPieces[color];
   }
 
   // MANIPULATING BOARD
@@ -162,6 +183,7 @@ public class Board {
       board[move.x2][move.y2] = null;
     } else {
       piece = new Piece(color, move.x1, move.y1);
+      colorPieces[color].insertFront(piece);
     }
     board[move.x1][move.y1] = piece;
     piece.x = move.x1;
@@ -181,6 +203,9 @@ public class Board {
       board[move.x2][move.y2] = piece;
       piece.x = move.x2;
       piece.y = move.y2;
+    }
+    else {
+      colorPieces[color].remove(piece);
     }
     board[move.x1][move.y1] = null;
   }
