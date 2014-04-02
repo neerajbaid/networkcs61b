@@ -95,7 +95,7 @@ public class MachinePlayer extends Player {
   public Move chooseMove() {
     // lower the depth for step pieces
     if (!board.hasPiecesLeft(color)) {
-      variableSearchDepth = searchDepth - 3;
+      variableSearchDepth = searchDepth - 2;
     }
     ScoredMove scoredMove = chooseMoveHelper(color, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, null);
     Move move = scoredMove.move;
