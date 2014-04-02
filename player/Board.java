@@ -579,5 +579,12 @@ public class Board
     System.out.println("all networks: " + current_networks.toString());
     expect(1, b.current_networks.length());
 
+    b.board[2][3] = null;
+    b.board[3][4] = null;
+    b.findAllNetworks(WHITE);
+    print(b);
+    System.out.println("all networks: " + current_networks.toString());
+    expect(0, b.current_networks.length());
+
   }
 }
