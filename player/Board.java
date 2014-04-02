@@ -464,13 +464,12 @@ public class Board {
   }
 
   //calculates one half of the intermediate score
-  private int calcInterSight(int player) {
+  private int intermediate (int player) {
     DList playerPieces = getPieces(player);
     DList opponentPieces = getPieces(flipColor(player));
     
     //calculate a score based on how many pieces each piece can see (doesn't matter if pieces double counted)
     int yourScore = 0;
-
     for (ListNode currentPiece : playerPieces) {
       yourScore += numPairsPieceCanForm((Piece)currentPiece.item());   
     }
@@ -489,11 +488,9 @@ public class Board {
     * Evaluates the board based on the intermediate score and whether or not
     *  there is a network completed.
     */
-  public int evaluate(int playerIn) {
-    int player = playerIn;
+  public int evaluate(int player) {
 
     //find if any network reaches goal, if so then return my win
-    findAllNetworks(player);
     DList networks = findAllNetworks(player);
     boolean reachesGoal = false;
     int myPlacedPieces = 0;
@@ -509,8 +506,8 @@ public class Board {
       //count my placed pieces to determine whether I need to add or set
       myPlacedPieces += pieces.length();
 
-      if (this.isOnValidGoal(front.x, front.y, playerIn)
-          && this.isOnValidGoal(back.x, back.y, playerIn)) {   
+      if (this.isOnValidGoal(front.x, front.y, player)
+          && this.isOnValidGoal(back.x, back.y, player)) {
         return MY_WIN;
       }
     }
@@ -528,13 +525,13 @@ public class Board {
       Piece back = (Piece) pieces.back().item();
       otherPlacedPieces += pieces.length();
 
-      if (this.isOnValidGoal(front.x, front.y, playerIn)
-          && this.isOnValidGoal(back.x, back.y, playerIn)) {   
+      if (this.isOnValidGoal(front.x, front.y, player)
+          && this.isOnValidGoal(back.x, back.y, player)) {
         return OPP_WIN;
       }
     }
     //if neither opponent has a sure win, then calculate an intermediate score and sum it with a score based on if I can add or set
-    return this.calcInterSight(playerIn) + 5 * ((myPlacedPieces <= 10) ? 1 : 0);
+    return this.intermediate(flipColor(player)) + 5 * ((myPlacedPieces <= 10) ? 1 : 0);
   }
 
   /**
