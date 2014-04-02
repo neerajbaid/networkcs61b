@@ -154,7 +154,6 @@ public class Board
     board[move.x1][move.y1] = null;
   }
 
-
   // # pragma mark - Network Finding #iOSProgrammers #ye
 
   public DList findAllNetworks(int color)
@@ -383,48 +382,91 @@ public class Board
     return pieces;
   }
 
-  public int evaluate(int playerIn) {
-    int player = playerIn;
-
-    DList networks = this.findAllNetworks(player);
-    boolean reachesGoal = false;
-    ListNode current = networks.front();
-    while(current != null) {
-      Chain network = (Chain) current.item();
-
-      DList pieces = network.getPieces();
-      Piece front = (Piece) pieces.front().item();
-      Piece back = (Piece) pieces.back().item();
-
-      if(this.isOnValidGoal(front.x, front.y, playerIn) && this.isOnValidGoal(back.x, back.y, playerIn)) {
-        return 1;
-      }
-
-      current = current.next();
+  public int evaluate(int player) {
+    DList playerPieces = piecesOfPlayer(player);
+    DList opponentPieces = piecesOfPlayer(1-player);
+    DListNode currentPiece = pieces.front();
+    int length = pieces.length();
+    while (length > 0)
+    {
+      int numPairsPieceCanForm = numPairsPieceCanForm(currentPiece);
+      // do something with this ^
+      length--;
     }
-
-    //switch players
-    player = 1 - player;
-    networks = this.findAllNetworks(player);
-    reachesGoal = false;
-    current = networks.front();
-    while(current != null){
-      Chain network = (Chain) current.item();
-
-      DList pieces = network.getPieces();
-      Piece front = (Piece) pieces.front().item();
-      Piece back = (Piece) pieces.back().item();
-
-      if(this.isOnValidGoal(front.x, front.y, playerIn) && this.isOnValidGoal(back.x, back.y, playerIn)) {
-        return -1;
-      }
-
-      current = current.next();
-    }
-
-    return 0;
   }
 
+  // public int evaluate(int playerIn) {
+  //   int player = playerIn;
+  //
+  //   findAllNetworks(player);
+  //   DList networks = current_networks;
+  //   boolean reachesGoal = false;
+  //   ListNode current = networks.front();
+  //   while(current != null) {
+  //     Chain network = (Chain) current.item();
+  //
+  //     DList pieces = network.getPieces();
+  //     Piece front = (Piece) pieces.front().item();
+  //     Piece back = (Piece) pieces.back().item();
+  //
+  //     if(this.isOnValidGoal(front.x, front.y, playerIn) && this.isOnValidGoal(back.x, back.y, playerIn)) {
+  //       return 1;
+  //     }
+  //
+  //     current = current.next();
+  //   }
+  //
+  //   //switch players
+  //   player = 1 - player;
+  //   networks = this.findAllNetworks(player);
+  //   reachesGoal = false;
+  //   current = networks.front();
+  //   while(current != null){
+  //     Chain network = (Chain) current.item();
+  //
+  //     DList pieces = network.getPieces();
+  //     Piece front = (Piece) pieces.front().item();
+  //     Piece back = (Piece) pieces.back().item();
+  //
+  //     if(this.isOnValidGoal(front.x, front.y, playerIn) && this.isOnValidGoal(back.x, back.y, playerIn)) {
+  //       return -1;
+  //     }
+  //
+  //     current = current.next();
+  //   }
+  //
+  //   return 0;
+  // }
+
+  public DList piecesOfPlayer(int player)
+  {
+    DList pieces = new DList();
+    for (int x = 0; x < BOARD_LENGTH; x++)
+    {
+      for (int y = 0; y < BOARD_LENGTH; y++)
+      {
+        if (pieceAtCoordinate({x,y}).color == player)
+        {
+          pieces.insertBack(pieceAtCoordinate({x,y}));
+        }
+      }
+    }
+    return pieces;
+  }
+
+  public int numPairsPieceCanForm(Piece piece)
+  {
+    num = 0;
+    for (int direction : DIRECTIONS)
+    {
+      Piece nextPiece = findNextPieceInDirection(piece, direction);
+      if (nextPiece != null)
+      {
+        num++;
+      }
+    }
+    return num;
+  }
 
   // TESTING CODE:
 
