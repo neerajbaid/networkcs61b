@@ -24,7 +24,7 @@ public class Board
     DIRECTION_RIGHT, DIRECTION_DOWN_RIGHT, DIRECTION_DOWN,
     DIRECTION_DOWN_LEFT, DIRECTION_LEFT, DIRECTION_UP_LEFT};
 
-  private static final int WHITE_WIN = 0, BLACK_WIN = 1;
+  private static final int MY_WIN = 1, OPP_WIN = -1;
 
   public static final int LENGTH = 8;
   public static final int END_INDEX = 7;
@@ -620,6 +620,13 @@ public class Board
     print(b);
     System.out.println("all networks: " + current_networks.toString());
     expect(1, b.current_networks.length());
+
+    b.board[2][3] = null;
+    b.board[3][4] = null;
+    b.findAllNetworks(WHITE);
+    print(b);
+    System.out.println("all networks: " + current_networks.toString());
+    expect(0, b.current_networks.length());
 
   }
 }
