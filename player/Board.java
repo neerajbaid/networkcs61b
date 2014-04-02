@@ -384,7 +384,10 @@ public class Board {
     DList networks = findAllNetworks(player);
     boolean reachesGoal = false;
     ListNode current = networks.front();
-    while (current != null) {
+    int networkLength = networks.length();
+    int counter = 0;
+    
+    while (counter < networkLength) {
       Chain network = (Chain) current.item();
 
       DList pieces = network.getPieces();
@@ -397,6 +400,7 @@ public class Board {
       }
 
       current = current.next();
+      counter++;
     }
 
     // switch players
@@ -404,7 +408,10 @@ public class Board {
     networks = this.findAllNetworks(player);
     reachesGoal = false;
     current = networks.front();
-    while (current != null) {
+
+    networkLength = networks.length();
+    counter = 0;
+    while (counter < networkLength) {
       Chain network = (Chain) current.item();
 
       DList pieces = network.getPieces();
@@ -412,11 +419,12 @@ public class Board {
       Piece back = (Piece) pieces.back().item();
 
       if (this.isOnValidGoal(front.x, front.y, playerIn)
-          && this.isOnValidGoal(back.x, back.y, playerIn)) {
+          && this.isOnValidGoal(back.x, back.y, playerIn)) {   
         return Integer.MIN_VALUE;
       }
 
       current = current.next();
+      counter++;
     }
 
     return this.calcInter(playerIn);
@@ -426,7 +434,8 @@ public class Board {
     DList pieces = new DList();
     for (int x = 0; x < LENGTH; x++) {
       for (int y = 0; y < LENGTH; y++) {
-        if (pieceAtCoordinate(new int[] { x, y }).color == player) {
+    	  Piece piece = pieceAtCoordinate(new int[] { x, y });
+        if (piece != null && piece.color == player) {
           pieces.insertBack(pieceAtCoordinate((new int[] { x, y })));
           
         }
@@ -579,35 +588,21 @@ public class Board {
     ch.addPiece(b.board[0][2]);
     expect(true, b.pieceIsInTargetEndZone(b.board[7][2], ch));
     expect(false, b.pieceIsInTargetEndZone(b.board[0][4], ch));
+    
+    b = new Board();
 
     // Find Network:
-    m = new Move(4, 3);
-    b.performValidMove(m, WHITE);
-    m = new Move(2, 3);
-    b.performValidMove(m, WHITE);
-    m = new Move(0, 3);
-    b.performValidMove(m, WHITE);
+    b.performValidMove(new Move(0, 3), WHITE);
+    b.performValidMove(new Move(2, 3), WHITE);
+    b.performValidMove(new Move(3, 2), WHITE);
+    b.performValidMove(new Move(4, 3), WHITE);
+    b.performValidMove(new Move(5, 3), WHITE);
+    b.performValidMove(new Move(7, 5), WHITE);
+    b.performValidMove(new Move(1, 3), BLACK);
     print(b);
-    DList nets = b.findAllNetworks(WHITE);
-    System.out.println("all networks: " + nets.toString());
-    expect(0, nets.length());
-    print(b);
-
-    b.board[0][2] = null;
-    b.board[0][4] = null;
-    m = new Move(3, 4);
-    b.performValidMove(m, WHITE);
-    nets = b.findAllNetworks(WHITE);
-    print(b);
-    System.out.println("all networks: " + nets.toString());
-    expect(1, nets.length());
-
-    b.board[2][3] = null;
-    b.board[3][4] = null;
-    nets = b.findAllNetworks(WHITE);
-    print(b);
-    System.out.println("all networks: " + nets.toString());
-    expect(0, nets.length());
+    print("eval " + b.evaluate(0));
+    
+    
 
   }
 }
