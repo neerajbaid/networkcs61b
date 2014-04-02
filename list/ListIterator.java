@@ -35,4 +35,14 @@ public class ListIterator implements Iterator<ListNode> {
     current = current.next();
     return temp;
   }
+
+/**
+  *  Remove ListNode (unused)
+  */
+  public void remove() {
+    if (!current.isValidNode()) {
+      return;
+    }
+    current.remove();
+  }
 }
