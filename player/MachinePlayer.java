@@ -13,8 +13,9 @@ public class MachinePlayer extends Player {
 
   private Board board;
   private int color;
+  private int oppColor;
   private int searchDepth;
-  private static final int DEFAULT_DEPTH = 1;
+  private static final int DEFAULT_DEPTH = 2;
 
   // Creates a machine player with the given color.  Color is either 0 (black)
   // or 1 (white).  (White has the first move.)
@@ -22,6 +23,7 @@ public class MachinePlayer extends Player {
     board = new Board();
     searchDepth = DEFAULT_DEPTH;
     this.color = color;
+    this.oppColor = Board.flipColor(color);
   }
 
   // Creates a machine player with the given color and search depth.  Color is   
@@ -30,6 +32,7 @@ public class MachinePlayer extends Player {
     board = new Board();
     this.searchDepth = searchDepth;
     this.color = color;
+    this.oppColor = Board.flipColor(color);
   }
   
   private DList validMovesHelper (int color, Piece stepPiece) {
@@ -82,69 +85,67 @@ public class MachinePlayer extends Player {
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
-    Move m = chooseMoveHelper(color, -Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
-    board.performValidMove(m, color);
-    return m;
+    ScoredMove scoredMove = chooseMoveHelper(color, -Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
+    Move move = scoredMove.move;
+    board.performValidMove(move, color);
+    return move;
   }
 
-  private Move chooseMoveHelper(int side, int alpha, int beta, int depth) {
-    Move myBest, replyBest;
-    int myBestScore, replyBestScore;
-    if (side == color) {
-      myBestScore = alpha;
-      replyBestScore = beta;
-    } else {
-      myBestScore = beta;
-      replyBestScore = alpha;
-    }
+  private ScoredMove chooseMoveHelper(int side, int alpha, int beta, int depth) {
     DList validMoves = validMoves(side);
 
     if (depth >= searchDepth) {
-      myBest = (Move) validMoves.front().item();
-      ListNode current = validMoves.front();
-      while(current.isValidNode()) {
-        Move move = (Move) current.item();
+      // System.out.println("depth hit");
+      int max = 0;
+      Move best = null;
+      for (ListNode node : validMoves) {
+        Move move = (Move) node.item();
         board.performValidMove(move, side);
-        int score = board.evaluate(side);
+        int score = board.evaluate(color);
         board.undoMove(move);
-        if (color == Board.WHITE && score > myBestScore) {
-          myBestScore = score;
-          myBest = move;
+        if (best == null) {
+          best = move;
+          max = score;
         }
-        if (color == Board.BLACK && score < myBestScore) {
-          myBestScore = score;
-          myBest = move;
+        if (side == color && score > max) {
+          max = score;
+          best = move;
         }
-        current = current.next();
+        else if (side == oppColor && score < max) {
+          max = score;
+          best = move;
+        }
       }
-      return myBest;
+      return new ScoredMove(max, best);
     }
 
-    // if ("this" Grid is full or has a win) {
-      // return a Best with the Grid’s score, no move;
-      // return new Move();
-    // }
-
-    ListNode current = validMoves.front();
-    myBest = (Move) current.item();
-    while(current.isValidNode()) {
-      Move move = (Move) current.item();
+    ScoredMove replyBest;
+    ScoredMove myBest = new ScoredMove();
+    if (side == color) {
+      myBest.score = alpha;
+    } else {
+      myBest.score = beta;
+    }
+    myBest.move = (Move) validMoves.front().item();
+    for (ListNode node : validMoves) {
+      // System.out.println("hi");
+      Move move = (Move) node.item();
       board.performValidMove(move, side);
       replyBest = chooseMoveHelper(Board.flipColor(side), alpha, beta, depth+1);
       board.undoMove(move);
-      if (side == Board.WHITE && replyBestScore > myBestScore) {
-        myBest = move;
-        myBestScore = replyBestScore;
-        alpha = replyBestScore;
-      } else if (side == Board.BLACK && replyBestScore < myBestScore) {
-        myBest = move;
-        myBestScore = replyBestScore;
-        beta = replyBestScore;
+      if (side == color && replyBest.score > myBest.score) {
+        myBest.move = move;
+        myBest.score = replyBest.score;
+        alpha = replyBest.score;
+      } else if (side == oppColor && replyBest.score < myBest.score) {
+        myBest.move = move;
+        myBest.score = replyBest.score;
+        beta = replyBest.score;
       }
       if (alpha >= beta) {
+        // System.out.println("alpha");
         return myBest;
       }
-      current = current.next();
     }
     return myBest;
   }
@@ -154,10 +155,10 @@ public class MachinePlayer extends Player {
   // illegal, returns false without modifying the internal state of "this"
   // player.  This method allows your opponents to inform you of their moves.
   public boolean opponentMove(Move m) {
-    if (!board.isValidMove(m, Board.flipColor(color))) {
+    if (!board.isValidMove(m, oppColor)) {
       return false;
     }
-    board.performValidMove(m, Board.flipColor(color));
+    board.performValidMove(m, oppColor);
     return true;
   }
 
@@ -189,7 +190,7 @@ public class MachinePlayer extends Player {
   }
   public static void main(String[] args) {
     Move m;
-    int depth = 1;
+    int depth = DEFAULT_DEPTH;
     MachinePlayer p = new MachinePlayer(Board.WHITE, depth);
     MachinePlayer o = new MachinePlayer(Board.BLACK, depth);
 
