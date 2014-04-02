@@ -24,7 +24,7 @@ public class Board
     DIRECTION_RIGHT, DIRECTION_DOWN_RIGHT, DIRECTION_DOWN,
     DIRECTION_DOWN_LEFT, DIRECTION_LEFT, DIRECTION_UP_LEFT};
 
-  private static final int WHITE_WIN = 0, BLACK_WIN = 1;
+  private static final int MY_WIN = 1, OPP_WIN = -1;
 
   public static final int LENGTH = 8;
   public static final int END_INDEX = 7;
@@ -397,7 +397,7 @@ public class Board
       Piece back = (Piece) pieces.back().item();
 
       if(this.isOnValidGoal(front.x, front.y, playerIn) && this.isOnValidGoal(back.x, back.y, playerIn)) {
-        return 1;
+        return MY_WIN;
       }
 
       current = current.next();
@@ -416,7 +416,7 @@ public class Board
       Piece back = (Piece) pieces.back().item();
 
       if(this.isOnValidGoal(front.x, front.y, playerIn) && this.isOnValidGoal(back.x, back.y, playerIn)) {
-        return -1;
+        return OPP_WIN;
       }
 
       current = current.next();
