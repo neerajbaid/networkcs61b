@@ -16,7 +16,7 @@ public class MachinePlayer extends Player {
   private int oppColor;
   private int searchDepth;
   private int variableSearchDepth;
-  private static final int DEFAULT_DEPTH = 5;
+  private static final int DEFAULT_DEPTH = 4;
 
   // Creates a machine player with the given color.  Color is either 0 (black)
   // or 1 (white).  (White has the first move.)
@@ -69,14 +69,12 @@ public class MachinePlayer extends Player {
     // now find step moves:
     DList myPieces = board.getPieces(color);
     DList validMoves = new DList();
-    ListNode current = myPieces.front();
-    while(current.isValidNode()) {
-      Piece piece = (Piece) current.item();
+    for (ListNode node : myPieces) {
+      Piece piece = (Piece) node.item();
       board.tempRemove(piece);
       DList newMoves = validMovesHelper(color, piece);
       validMoves.extend(newMoves);
       board.tempRestore(piece);
-      current = current.next();
     }
     
     return validMoves;

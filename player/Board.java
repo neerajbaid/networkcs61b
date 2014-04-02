@@ -243,10 +243,8 @@ public class Board {
     // System.out.println("beginning zone: " + beginningZonePieces.toString());
     // System.out.println("first beginning piece: " + beginningZonePieces.front().item().toString());
     DList networks = new DList();
-    int length = beginningZonePieces.length();
-    ListNode pieceNode = beginningZonePieces.front();
 
-    while (length > 0) {
+    for (ListNode pieceNode : beginningZonePieces) {
       Piece piece = (Piece) pieceNode.item();
       // System.out.println("starting piece: " + piece);
       Chain beginning = new Chain(color);
@@ -257,8 +255,6 @@ public class Board {
         // System.out.println("returned completed network, network is null");
       // else
         // System.out.println("returned completed network, network is not null");
-      length--;
-      pieceNode = pieceNode.next();
     }
     return networks;
   }
@@ -471,26 +467,18 @@ public class Board {
   private int calcInterSight(int player) {
     DList playerPieces = getPieces(player);
     DList opponentPieces = getPieces(flipColor(player));
-    DListNode currentPiece = (DListNode) playerPieces.front();
-    int length = playerPieces.length();
     
     //calculate a score based on how many pieces each piece can see (doesn't matter if pieces double counted)
     int yourScore = 0;
 
-    while (length > 0) {
+    for (ListNode currentPiece : playerPieces) {
       yourScore += numPairsPieceCanForm((Piece)currentPiece.item());   
-      currentPiece = (DListNode) currentPiece.next();
-      length--;
     }
 
     //do same for opponent
-    currentPiece = (DListNode) opponentPieces.front();
-    length = opponentPieces.length();
     int otherScore = 0;
-    while (length > 0) {
+    for (ListNode currentPiece : opponentPieces) {
       otherScore += numPairsPieceCanForm((Piece)currentPiece.item());
-      currentPiece = (DListNode) currentPiece.next();
-      length--;
     }
 
     //difference between number of pieces each piece can see from my side and opponent's side
@@ -508,13 +496,10 @@ public class Board {
     findAllNetworks(player);
     DList networks = findAllNetworks(player);
     boolean reachesGoal = false;
-    ListNode current = networks.front();
-    int networkLength = networks.length();
-    int counter = 0;
     int myPlacedPieces = 0;
     
     //look at all networks and determine whether pieces are at opposite goals
-    while (counter < networkLength) {
+    for (ListNode current : networks) {
       Chain network = (Chain) current.item();
 
       DList pieces = network.getPieces();
@@ -528,20 +513,15 @@ public class Board {
           && this.isOnValidGoal(back.x, back.y, playerIn)) {   
         return MY_WIN;
       }
-
-      current = current.next();
-      counter++;
     }
+
     player = flipColor(player);
     networks = findAllNetworks(player);
     reachesGoal = false;
-    current = networks.front();
-    networkLength = networks.length();
-    counter = 0;
     int otherPlacedPieces = 0;
 
     //look at all networks and determine whether pieces are at opposite goals 
-    while (counter < networkLength) {
+    for (ListNode current : networks) {
       Chain network = (Chain) current.item();
       DList pieces = network.getPieces();
       Piece front = (Piece) pieces.front().item();
@@ -552,9 +532,6 @@ public class Board {
           && this.isOnValidGoal(back.x, back.y, playerIn)) {   
         return OPP_WIN;
       }
-
-      current = current.next();
-      counter++;
     }
     //if neither opponent has a sure win, then calculate an intermediate score and sum it with a score based on if I can add or set
     return this.calcInterSight(playerIn) + 5 * ((myPlacedPieces <= 10) ? 1 : 0);
@@ -573,6 +550,8 @@ public class Board {
     }
     return num;
   }
+
+
 
   // ***** TESTING CODE ******
   // READERS DO NOT NEED TO READ THE CODE BELOW
