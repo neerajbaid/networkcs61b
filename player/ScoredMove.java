@@ -22,4 +22,11 @@ public class ScoredMove {
     this.score = score;
     this.move = move;
   }
+
+  /**
+    * Returns string representation of ScoredMove (for testing)
+    */
+  public String toString() {
+    return move.toString() + " -> " + score;
+  }
 }
