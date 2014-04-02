@@ -33,10 +33,19 @@ public class Board {
   }
 
   // CHECKING VALID MOVE
+
+  /**
+    * Switches the player color.
+    * @parameter color: the integer representing the current player
+    * @return           the other player
+    */
   protected static int flipColor(int color) {
     return Math.abs(color - 1);
   }
 
+  /**
+    * Checks if a certain coordinate is in its goal zone.
+    */
   private boolean isOnValidGoal(int x, int y, int color) {
     if (isInCorner(x, y)) {
       return false;
@@ -48,10 +57,16 @@ public class Board {
     }
   }
 
+  /**
+    * Checks if a certain coordinate is in the wrong goal.
+    */
   private boolean isOnInvalidGoal(int x, int y, int color) {
     return isOnValidGoal(x, y, flipColor(color));
   }
 
+  /**
+    * Checks if a coordinate is in the corner of the board.
+    */
   private boolean isInCorner(int x, int y) {
     if (x == 0 || y == 0 || x == END_INDEX || y == END_INDEX) {
       int difference = Math.abs(x - y);
@@ -60,6 +75,9 @@ public class Board {
     return false;
   }
 
+  /**
+    *
+    */
   private boolean isInChainedCluster(int x, int y, int color) {
     for (int i = -1; i < 2; i++) {
       for (int j = -1; j < 2; j++) {
@@ -78,8 +96,11 @@ public class Board {
     return false;
   }
 
+  /**
+    *
+    */
   private boolean isInCluster(int x, int y, int color) {
-    // count how many pieces in vacinity
+    //count how many pieces in vicinity
     int counter = 0;
     for (int i = -1; i < 2; i++) {
       for (int j = -1; j < 2; j++) {
@@ -101,7 +122,11 @@ public class Board {
     return counter >= 2;
   }
 
-  public boolean isValidMove(Move move, int color) {
+  /**
+    * Checks if a certain move by a specific player is valid on the Board. Adheres
+    *   to all the rules outlined in the readme.
+    */
+  public boolean isValidMove(Move move, int color){
     int x = move.x1;
     int y = move.y1;
     if (isInCorner(x, y)) {
@@ -119,7 +144,10 @@ public class Board {
 
   // MANIPULATING BOARD
 
-  // Must be a valid move. If not valid, will break
+  /**
+    * Performs a move for a specific player.
+    * @parameter move:  Must be a valid move.
+    */
   public void performValidMove(Move move, int color) {
     if (move.moveKind == move.QUIT) {
       return;
@@ -136,6 +164,10 @@ public class Board {
     piece.y = move.y1;
   }
 
+  /**
+    * Reverses a move.
+    * @parameter move:  The Move that is to be reversed.
+    */
   public void undoMove(Move move) {
     if (move.moveKind == move.QUIT) {
       return;
@@ -150,7 +182,9 @@ public class Board {
   }
 
   // # pragma mark - Network Finding #iOSProgrammers #ye
-
+  /**
+    * Finds all the networks currently on the board of a certain player.
+    */
   public DList findAllNetworks(int color)
   {
     DList beginningZonePieces = beginningZonePieces(color);
@@ -178,6 +212,10 @@ public class Board {
     return networks;
   }
 
+  /**
+    * Finds a network based on a starting piece.
+    * @parameter piece:  The Piece from where findNetwork should begin its search.
+    */
   public void findNetwork(Piece piece, Chain currentNetwork, int prevDirection, DList networks)
   {
     if (pieceIsInTargetEndZone(piece, currentNetwork))
@@ -356,7 +394,7 @@ public class Board {
     int yourScore = 0;
 
     while (length > 0) {
-      yourScore += numPairsPieceCanForm((Piece)currentPiece.item());   
+      yourScore += numPairsPieceCanForm((Piece)currentPiece.item());
       // do something with this ^
 
       currentPiece = (DListNode) currentPiece.next();
@@ -386,7 +424,7 @@ public class Board {
     ListNode current = networks.front();
     int networkLength = networks.length();
     int counter = 0;
-    
+
     while (counter < networkLength) {
       Chain network = (Chain) current.item();
 
@@ -419,7 +457,7 @@ public class Board {
       Piece back = (Piece) pieces.back().item();
 
       if (this.isOnValidGoal(front.x, front.y, playerIn)
-          && this.isOnValidGoal(back.x, back.y, playerIn)) {   
+          && this.isOnValidGoal(back.x, back.y, playerIn)) {
         return Integer.MIN_VALUE;
       }
 
@@ -437,7 +475,7 @@ public class Board {
     	  Piece piece = pieceAtCoordinate(new int[] { x, y });
         if (piece != null && piece.color == player) {
           pieces.insertBack(pieceAtCoordinate((new int[] { x, y })));
-          
+
         }
       }
     }
@@ -588,7 +626,7 @@ public class Board {
     ch.addPiece(b.board[0][2]);
     expect(true, b.pieceIsInTargetEndZone(b.board[7][2], ch));
     expect(false, b.pieceIsInTargetEndZone(b.board[0][4], ch));
-    
+
     b = new Board();
 
     // Find Network:
@@ -601,8 +639,8 @@ public class Board {
     b.performValidMove(new Move(1, 3), BLACK);
     print(b);
     print("eval " + b.evaluate(0));
-    
-    
+
+
 
   }
 }
