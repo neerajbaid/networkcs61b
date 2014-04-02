@@ -31,7 +31,7 @@ public class MachinePlayer extends Player {
     this.color = color;
   }
   
-  public Move[] validMoves(Board board){
+  public Move[] validMoves(){
     DList moves = new DList();
     
     for(int i = 0; i < board.LENGTH; i++){
@@ -56,7 +56,9 @@ public class MachinePlayer extends Player {
   // Returns a new move by "this" player.  Internally records the move (updates
   // the internal game board) as a move by "this" player.
   public Move chooseMove() {
-    return chooseMoveHelper(color, -Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
+    Move m = chooseMoveHelper(color, -Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
+    board.performValidMove(m, color);
+    return m;
   }
 
   public Move chooseMoveHelper(int side, int alpha, int beta, int depth) {
@@ -69,7 +71,7 @@ public class MachinePlayer extends Player {
       myBestScore = beta;
       replyBestScore = alpha;
     }
-    Move[] validMoves = validMoves(board);
+    Move[] validMoves = validMoves();
 
     if (depth == searchDepth) {
       myBest = validMoves[0];
