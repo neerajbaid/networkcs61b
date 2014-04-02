@@ -235,10 +235,9 @@ public class Board {
       // System.out.println("complete network two: " + completed.toString());
       if (currentNetwork.numPieces() >= 6)
       {
-        // current_networks.insertFront(completed);
         networks.insertBack(currentNetwork.copy());
-        return; // check this for networks that run thru end zone and loop back
       }
+      return;
     }
 
     for (int direction : DIRECTIONS)
